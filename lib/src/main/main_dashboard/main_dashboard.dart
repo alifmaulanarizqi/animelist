@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fms/common_ui/utils/colors/common_colors.dart';
 import 'package:fms/common_ui/widgets/appbar/common_appbar.dart';
+import 'package:fms/src/detail/presentation/detail_page.dart';
 import 'package:fms/src/search/presentation/search_page.dart';
 import 'package:fms/src/season/presentation/season_page.dart';
 
 class MainPage extends StatelessWidget {
-  static const route = '/main-dashboard';
+  static const route = '/home';
 
   const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: BottomNavigationBarExample(),
-    );
+    return const BottomNavigationBarExample();
   }
 }
 
@@ -33,10 +32,7 @@ class _BottomNavigationBarExampleState
   static const List<Widget> _widgetOptions = <Widget>[
     SearchPage(),
     SeasonPage(),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    DetailPage()
   ];
 
   void _onItemTapped(int index) {

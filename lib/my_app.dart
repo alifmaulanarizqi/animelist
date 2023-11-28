@@ -1,5 +1,6 @@
 import 'package:fms/common_ui/color_schemes.g.dart';
 import 'package:flutter/material.dart';
+import 'package:fms/src/detail/presentation/detail_page.dart';
 import 'package:fms/src/main/main_dashboard/main_dashboard.dart';
 import 'package:fms/src/search/presentation/search_page.dart';
 import 'package:fms/src/season/presentation/season_page.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         MainPage.route: (ctx) => const MainPage(),
         SearchPage.route: (ctx) => const SearchPage(),
         SeasonPage.route: (ctx) => const SeasonPage(),
+        DetailPage.route: (ctx) => const DetailPage(),
       },
     );
   }

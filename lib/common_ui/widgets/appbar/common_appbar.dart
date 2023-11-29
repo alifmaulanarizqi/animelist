@@ -7,17 +7,20 @@ class CommonAppbar extends StatelessWidget
   final Color backgroundColor;
   final String textTitle;
   final Color textColor;
+  final double elevation;
 
   const CommonAppbar({
     Key? key,
     this.textTitle = '',
     this.backgroundColor = Colors.white,
     this.textColor = Colors.black,
+    this.elevation = 3,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      elevation: elevation,
       automaticallyImplyLeading: true,
       backgroundColor: backgroundColor,
       centerTitle: false,

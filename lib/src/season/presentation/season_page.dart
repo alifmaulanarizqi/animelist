@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fms/src/detail/presentation/arg/detail_arg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
@@ -7,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../common_ui/utils/colors/common_colors.dart';
 import '../../../common_ui/utils/text_style/common_text_style.dart';
 import '../../../common_ui/widgets/common_state/common_error_state.dart';
+import '../../detail/presentation/detail_page.dart';
 import 'bloc/season_bloc.dart';
 
 class SeasonPage extends StatefulWidget {
@@ -95,7 +97,7 @@ class _SeasonPageState extends State<SeasonPage> {
   Widget _buildListSeason({
     required SeasonState state,
   }) {
-    final double itemHeight = (_size.height - kBottomNavigationBarHeight) / 2.28;
+    final double itemHeight = (_size.height - kBottomNavigationBarHeight) / 2.2;
     final double itemWidth = (_size.width - 24) / 2;
 
     return GridView.builder(
@@ -110,103 +112,114 @@ class _SeasonPageState extends State<SeasonPage> {
         bool lastIndex = index == _bloc.stateData.total - 1;
 
         if(index < _bloc.stateData.seasonDto.length - 1 || lastIndex) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  SizedBox(
-                    width: 184,
-                    height: 240,
-                    child: Image.network(
-                      state.data.seasonDto[index].image,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
+          return GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                DetailPage.route,
+                arguments: DetailArg(
+                  id: state.data.seasonDto[index].malId
+                ),
+              );
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    SizedBox(
+                      width: 184,
+                      height: 240,
+                      child: Image.network(
+                        state.data.seasonDto[index].image,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          }
 
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 0,
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-                      color: Colors.black.withOpacity(0.5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                '${state.data.seasonDto[index].score}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.star_rate_rounded,
-                                color: CommonColors.white,
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                NumberFormat("#,###").format(state.data.seasonDto[index].members),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              const Icon(
-                                Icons.group_rounded,
-                                color: CommonColors.white,
-                              )
-                            ],
-                          ),
-                        ],
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
                       ),
                     ),
+                    Positioned(
+                      bottom: 10,
+                      left: 0,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                        color: Colors.black.withOpacity(0.5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  '${state.data.seasonDto[index].score}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.star_rate_rounded,
+                                  color: CommonColors.white,
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  NumberFormat("#,###").format(state.data.seasonDto[index].members),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 4,
+                                ),
+                                const Icon(
+                                  Icons.group_rounded,
+                                  color: CommonColors.white,
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  state.data.seasonDto[index].title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CommonTypography.body.copyWith(
+                    color: CommonColors.black21,
+                    fontSize: 15
                   ),
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Text(
-                state.data.seasonDto[index].title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CommonTypography.body.copyWith(
-                  color: CommonColors.black21,
-                  fontSize: 15
                 ),
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              Text(
-                state.data.seasonDto[index].genres.join(', '),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CommonTypography.caption.copyWith(
-                  color: CommonColors.grey75,
-                  fontSize: 13
+                const SizedBox(
+                  height: 4,
                 ),
-              ),
-            ],
+                Text(
+                  state.data.seasonDto[index].genres.join(', '),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CommonTypography.caption.copyWith(
+                    color: CommonColors.grey75,
+                    fontSize: 13
+                  ),
+                ),
+              ],
+            ),
           );
         } else if(_bloc.stateData.seasonDto.length != _bloc.stateData.total) {
           return const Padding(

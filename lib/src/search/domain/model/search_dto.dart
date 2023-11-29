@@ -8,6 +8,7 @@ class SearchDto {
   final double score;
   final String image;
   final List<String> genres;
+  final int malId;
 
   const SearchDto({
     this.title = '',
@@ -19,6 +20,7 @@ class SearchDto {
     this.score = 0,
     this.image = '',
     this.genres = const [],
+    this.malId = 0,
   });
 
   @override

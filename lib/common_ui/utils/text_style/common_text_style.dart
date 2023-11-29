@@ -4,7 +4,6 @@ import '../colors/common_colors.dart';
 
 class CommonTypography {
   static const TextStyle roboto20 = TextStyle(
-    fontWeight: FontWeight.w600,
     color: CommonColors.black90,
     letterSpacing: 0.16,
     fontSize: 20,
@@ -12,14 +11,12 @@ class CommonTypography {
   );
 
   static const TextStyle roboto18 = TextStyle(
-    fontWeight: FontWeight.w600,
     color: CommonColors.black90,
     letterSpacing: 0.16,
     fontSize: 18,
     fontFamily: "Roboto",
   );
   static const TextStyle roboto16 = TextStyle(
-    fontWeight: FontWeight.w600,
     color: CommonColors.black90,
     letterSpacing: 0.16,
     fontSize: 16,
@@ -27,7 +24,6 @@ class CommonTypography {
   );
 
   static const TextStyle roboto14 = TextStyle(
-    fontWeight: FontWeight.w600,
     color: CommonColors.black90,
     letterSpacing: 0.16,
     fontSize: 14,
@@ -35,21 +31,18 @@ class CommonTypography {
   );
 
   static const TextStyle roboto13 = TextStyle(
-    fontWeight: FontWeight.w400,
     color: CommonColors.black90,
     letterSpacing: 0.16,
     fontSize: 13,
     fontFamily: "Roboto",
   );
   static const TextStyle roboto12 = TextStyle(
-    fontWeight: FontWeight.w600,
     color: CommonColors.black90,
     letterSpacing: 0.16,
     fontSize: 12,
     fontFamily: "Roboto",
   );
   static const TextStyle roboto10 = TextStyle(
-    fontWeight: FontWeight.w600,
     color: CommonColors.black90,
     letterSpacing: 0.16,
     fontSize: 10,

@@ -18,6 +18,7 @@ extension JobItemExt on SearchResponse? {
       score: this?.score ?? 0,
       image: this?.images?.jpg?.imageUrl ?? '',
       genres: genres,
+      malId: this?.malId ?? 0
     );
   }
 }

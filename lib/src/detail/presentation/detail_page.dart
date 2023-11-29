@@ -121,9 +121,6 @@ class _DetailPageState extends State<DetailPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const SizedBox(
-                      height: 25,
-                    ),
                     Text(
                       'Score',
                       style: CommonTypography.heading6.copyWith(
@@ -187,7 +184,7 @@ class _DetailPageState extends State<DetailPage> {
             ),
           ),
           const SizedBox(
-            height: 20,
+            height: 16,
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
@@ -269,6 +266,9 @@ class _DetailPageState extends State<DetailPage> {
               openings: state.data.detailDto.openings,
               endings: state.data.detailDto.endings,
             ),
+          ),
+          const SizedBox(
+            height: 16,
           ),
         ],
       ),
@@ -573,18 +573,224 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Widget _buildShimmerLoading() {
-    return Column(
-      children: [
-        Shimmer.fromColors(
-          baseColor: CommonColors.greyD1,
-          highlightColor: CommonColors.greyBD,
-          child: Container(
-            height: 120,
-            width: 300,
-            color: CommonColors.greyD1,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Shimmer.fromColors(
+                  baseColor: CommonColors.greyD1,
+                  highlightColor: CommonColors.greyBD,
+                  child: Container(
+                    height: 320,
+                    width: 220,
+                    color: CommonColors.greyD1,
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 24,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 28,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 20,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 22,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 20,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 22,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 20,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 22,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 20,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Shimmer.fromColors(
+                      baseColor: CommonColors.greyD1,
+                      highlightColor: CommonColors.greyBD,
+                      child: Container(
+                        height: 22,
+                        width: 100,
+                        color: CommonColors.greyD1,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(
+            height: 16,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Shimmer.fromColors(
+              baseColor: CommonColors.greyD1,
+              highlightColor: CommonColors.greyBD,
+              child: Container(
+                height: 30,
+                color: CommonColors.greyD1,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Shimmer.fromColors(
+              baseColor: CommonColors.greyD1,
+              highlightColor: CommonColors.greyBD,
+              child: Container(
+                height: 36,
+                color: CommonColors.greyD1,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Shimmer.fromColors(
+              baseColor: CommonColors.greyD1,
+              highlightColor: CommonColors.greyBD,
+              child: Container(
+                height: 30,
+                color: CommonColors.greyD1,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Shimmer.fromColors(
+              baseColor: CommonColors.greyD1,
+              highlightColor: CommonColors.greyBD,
+              child: Container(
+                height: 100,
+                color: CommonColors.greyD1,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Shimmer.fromColors(
+              baseColor: CommonColors.greyD1,
+              highlightColor: CommonColors.greyBD,
+              child: Container(
+                height: 250,
+                color: CommonColors.greyD1,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+        ],
+      ),
     );
   }
 

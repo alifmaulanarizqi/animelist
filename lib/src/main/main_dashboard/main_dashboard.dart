@@ -32,7 +32,7 @@ class _BottomNavigationBarExampleState
   static const List<Widget> _widgetOptions = <Widget>[
     SearchPage(),
     SeasonPage(),
-    DetailPage()
+    Text('Animelist')
   ];
 
   void _onItemTapped(int index) {

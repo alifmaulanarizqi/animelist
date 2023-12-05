@@ -7,6 +7,8 @@ import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../common_ui/widgets/common_state/common_error_state.dart';
+import '../../detail/presentation/arg/detail_arg.dart';
+import '../../detail/presentation/detail_page.dart';
 
 class SearchPage extends StatefulWidget {
   static const route = '/search';
@@ -153,126 +155,138 @@ class _SearchPageState extends State<SearchPage> {
           bool lastIndex = index == _bloc.stateData.total - 1;
 
           if(index < _bloc.stateData.searchDto.length - 1 || lastIndex) {
-            return Card(
-              elevation: 2,
-              child: Row(
-                children: [
-                  SizedBox(
-                    height: 120,
-                    child: Stack(
-                      children: [
-                        SizedBox(
-                          height: 120,
-                          child: Image.network(
-                            state.data.searchDto[index].image,
-                            width: 92,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              }
+            return GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  DetailPage.route,
+                  arguments: DetailArg(
+                      id: state.data.searchDto[index].malId
+                  ),
+                );
+              },
+              child: Card(
+                color: CommonColors.white,
+                elevation: 1,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 120,
+                      child: Stack(
+                        children: [
+                          SizedBox(
+                            height: 120,
+                            child: Image.network(
+                              state.data.searchDto[index].image,
+                              width: 92,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
 
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 10,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            color: Colors.black.withOpacity(0.5),
-                            child: Row(
-                              children: [
-                                Text(
-                                  '${state.data.searchDto[index].score}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                        : null,
                                   ),
-                                ),
-                                const Icon(
-                                  Icons.star_rate_rounded,
-                                  color: CommonColors.white,
-                                )
-                              ],
+                                );
+                              },
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            state.data.searchDto[index].title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: CommonTypography.heading8
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: CommonColors.red52,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
+                          Positioned(
+                            bottom: 10,
+                            right: 0,
+                            child: Container(
                               padding: const EdgeInsets.all(2),
-                              child: Text(
-                                  state.data.searchDto[index].type,
-                                  style: CommonTypography.body.copyWith(
-                                      color: CommonColors.white
+                              color: Colors.black.withOpacity(0.5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '${state.data.searchDto[index].score}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.star_rate_rounded,
+                                    color: CommonColors.white,
                                   )
+                                ],
                               ),
                             ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                                '${state.data.searchDto[index].episode} ep, ${state.data.searchDto[index].season} ${state.data.searchDto[index].year}',
-                                style: CommonTypography.body
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              '${state.data.searchDto[index].members}',
-                              style: CommonTypography.caption.copyWith(
-                                  fontSize: 13,
-                                  color: CommonColors.grey75
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 6,
-                            ),
-                            const Icon(
-                              Icons.supervisor_account_rounded,
-                              size: 22,
-                              color: CommonColors.grey75,
-                            ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              state.data.searchDto[index].title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: CommonTypography.heading8
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: CommonColors.red52,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                                padding: const EdgeInsets.all(2),
+                                child: Text(
+                                    state.data.searchDto[index].type,
+                                    style: CommonTypography.body.copyWith(
+                                        color: CommonColors.white
+                                    )
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                  '${state.data.searchDto[index].episode} ep, ${state.data.searchDto[index].season} ${state.data.searchDto[index].year}',
+                                  style: CommonTypography.body
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                '${state.data.searchDto[index].members}',
+                                style: CommonTypography.caption.copyWith(
+                                    fontSize: 13,
+                                    color: CommonColors.grey75
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 6,
+                              ),
+                              const Icon(
+                                Icons.supervisor_account_rounded,
+                                size: 22,
+                                color: CommonColors.grey75,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           } else if(_bloc.stateData.searchDto.length != _bloc.stateData.total) {
@@ -285,8 +299,6 @@ class _SearchPageState extends State<SearchPage> {
           }
 
           return const SizedBox.shrink();
-
-
         }
       ),
     );

@@ -1,44 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:fms/common_ui/utils/colors/common_colors.dart';
 import 'package:fms/common_ui/widgets/appbar/common_appbar.dart';
-import 'package:fms/src/detail/presentation/detail_page.dart';
+import 'package:fms/src/animelist/presentation/list_anime/list_anime_page.dart';
 import 'package:fms/src/search/presentation/search_page.dart';
 import 'package:fms/src/season/presentation/season_page.dart';
 
-class MainPage extends StatelessWidget {
+import '../../../core/utils/value_extension.dart';
+import 'args/main_dashboard_arg.dart';
+
+class MainPage extends StatefulWidget {
   static const route = '/home';
 
   const MainPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const BottomNavigationBarExample();
-  }
+  State<MainPage> createState() => _MainPageState();
 }
 
-class BottomNavigationBarExample extends StatefulWidget {
-  const BottomNavigationBarExample({super.key});
-
-  @override
-  State<BottomNavigationBarExample> createState() =>
-      _BottomNavigationBarExampleState();
-}
-
-class _BottomNavigationBarExampleState
-    extends State<BottomNavigationBarExample> {
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+class _MainPageState extends State<MainPage> {
+  late int _selectedIndex;
   static const List<Widget> _widgetOptions = <Widget>[
     SearchPage(),
     SeasonPage(),
-    Text('Animelist')
+    ListAnimePage()
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    var args = cast<MainDashboardArg>(
+      ModalRoute.of(context)?.settings.arguments,
+    );
+    int indexPage = args?.indexPage ?? 0;
+    _selectedIndex = indexPage;
   }
 
   @override

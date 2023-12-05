@@ -1,4 +1,5 @@
 class DetailDto {
+  final int malId;
   final String title;
   final String type;
   final int episode;
@@ -26,6 +27,7 @@ class DetailDto {
   final int rank;
 
   const DetailDto({
+    this.malId = 0,
     this.title = '',
     this.type = '',
     this.episode = 0,

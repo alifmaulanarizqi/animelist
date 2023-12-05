@@ -12,6 +12,7 @@ extension JobItemExt on SearchResponse? {
       members: this?.members ?? 0,
       score: this?.score ?? 0,
       image: this?.images?.jpg?.imageUrl ?? '',
+      malId: this?.malId ?? 0,
     );
   }
 }

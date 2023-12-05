@@ -62,6 +62,7 @@ extension JobItemExt on DetailResponse? {
     });
 
     return DetailDto(
+      malId: this?.malId ?? 0,
       title: this?.title ?? '',
       type: this?.type ?? '',
       episode: this?.episodes ?? 0,

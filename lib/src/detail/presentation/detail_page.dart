@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fms/common_ui/utils/text_style/common_text_style.dart';
 import 'package:fms/common_ui/widgets/appbar/common_appbar.dart';
+import 'package:fms/src/animelist/presentation/add_anime/add_anime_page.dart';
+import 'package:fms/src/animelist/presentation/add_anime/arg/animelist_arg.dart';
 import 'package:fms/src/detail/presentation/arg/detail_arg.dart';
 import 'package:fms/src/detail/presentation/widget/VideoTrailerPlayer.dart';
 import 'package:get_it/get_it.dart';
@@ -52,7 +54,7 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CommonAppbar(
-        textTitle: "Animelist",
+        textTitle: "Detail Anime",
         textColor: Colors.white,
         backgroundColor: CommonColors.blueB5,
       ),
@@ -82,6 +84,33 @@ class _DetailPageState extends State<DetailPage> {
             return _buildDetailAnime(state: state);
           },
         ),
+      ),
+      floatingActionButton: BlocBuilder<DetailBloc, DetailState>(
+        bloc: _bloc,
+        builder: (context, state) {
+          if(state is DetailSuccessState) {
+            return FloatingActionButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    AddAnimePage.route,
+                    arguments: AnimelistArg(
+                        detailDto: state.data.detailDto
+                    ),
+                  );
+                },
+                backgroundColor: CommonColors.blue9F,
+                shape: const CircleBorder(),
+                child: const Icon(
+                  Icons.playlist_add_rounded,
+                  size: 30,
+                  color: CommonColors.white,
+                ),
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

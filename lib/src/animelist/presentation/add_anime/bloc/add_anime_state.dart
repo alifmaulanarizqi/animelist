@@ -50,3 +50,27 @@ class AddAnimeFailedState extends AddAnimeState {
 class AddAnimeSuccessState extends AddAnimeState {
   const AddAnimeSuccessState(super.data);
 }
+
+class UpdateAnimeLoadingState extends AddAnimeState {
+  const UpdateAnimeLoadingState(super.data);
+}
+
+class UpdateAnimeFailedState extends AddAnimeState {
+  const UpdateAnimeFailedState(super.data);
+}
+
+class UpdateAnimeSuccessState extends AddAnimeState {
+  const UpdateAnimeSuccessState(super.data);
+}
+
+class DeleteAnimeLoadingState extends AddAnimeState {
+  const DeleteAnimeLoadingState(super.data);
+}
+
+class DeleteAnimeFailedState extends AddAnimeState {
+  const DeleteAnimeFailedState(super.data);
+}
+
+class DeleteAnimeSuccessState extends AddAnimeState {
+  const DeleteAnimeSuccessState(super.data);
+}

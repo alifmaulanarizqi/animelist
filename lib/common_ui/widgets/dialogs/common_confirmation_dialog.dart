@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fms/common_ui/utils/text_style/common_text_style.dart';
 
 import '../../utils/colors/common_colors.dart';
-import '../button/outline_button_text.dart';
 import '../button/primary_button_text_and_icon.dart';
 
 class CommonConfirmationDialog extends StatelessWidget {
@@ -29,6 +28,7 @@ class CommonConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: CommonColors.white,
+      elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       insetPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       alignment: Alignment.center,
@@ -41,11 +41,7 @@ class CommonConfirmationDialog extends StatelessWidget {
               padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
               child: Text(
                 title,
-                style: CommonTypography.roboto20.copyWith(
-                  fontSize: 24,
-                  color: CommonColors.blueE9,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: CommonTypography.roboto20,
               ),
             ),
             Padding(
@@ -73,7 +69,7 @@ class CommonConfirmationDialog extends StatelessWidget {
                     Expanded(
                       child: PrimaryButtonTextAndIcon(
                         borderRadius: 8,
-                        textColor: CommonColors.blueB5,
+                        textColor: CommonColors.blue9F,
                         horizontalPadding: 5,
                         verticalPadding: 5,
                         onTap: () {
@@ -83,7 +79,7 @@ class CommonConfirmationDialog extends StatelessWidget {
                         fontSize: 18,
                         label: btnTextLeft,
                         backgroundColor: CommonColors.white,
-                        borderColor: CommonColors.blueB5,
+                        borderColor: CommonColors.blue9F,
                         isActive: true,
                       ),
                     ),
@@ -91,7 +87,7 @@ class CommonConfirmationDialog extends StatelessWidget {
                     Expanded(
                       child: PrimaryButtonTextAndIcon(
                         borderRadius: 8,
-                        textColor: Colors.white,
+                        textColor: CommonColors.red52,
                         horizontalPadding: 5,
                         verticalPadding: 5,
                         onTap: () {
@@ -100,7 +96,8 @@ class CommonConfirmationDialog extends StatelessWidget {
                         },
                         fontSize: 18,
                         label: btnTextRight,
-                        backgroundColor: CommonColors.blueE9,
+                        backgroundColor: CommonColors.white,
+                        borderColor: CommonColors.red52,
                         isActive: true,
                       ),
                     ),

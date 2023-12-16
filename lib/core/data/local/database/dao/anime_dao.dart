@@ -11,6 +11,22 @@ abstract class AnimeDao {
 
   @insert
   Future<void> insertAnime(AnimeEntity animeEntity);
+
+  @update
+  Future<void> updateAnime(AnimeEntity animeEntity);
+
+  @delete
+  Future<void> deleteAnime(AnimeEntity animeEntity);
+
+  @Query("UPDATE Anime SET progress_episode = progress_episode + 1 WHERE id = :id")
+  Future<void> addAnimeEpisode(int id);
+
+  @Query("UPDATE Anime SET progress_episode = progress_episode - 1 WHERE id = :id")
+  Future<void> reduceAnimeEpisode(int id);
+
+  @Query("UPDATE Anime SET is_completed = 1 WHERE id = :id")
+  Future<void> updateIsCompletedColumn(int id);
+
   //
   // @Query('SELECT name FROM Person')
   // Stream<List<String>> findAllPeopleName();

@@ -22,7 +22,7 @@ class SearchUseCase {
       limit: limit,
       q: q,
     ).mapRight((response) {
-      var data = response.data?.map(_mapCourse).toList() ?? [];
+      var data = response.data?.map(_mapSearch).toList() ?? [];
 
       return BaseResponse(
         data: data,
@@ -32,7 +32,7 @@ class SearchUseCase {
 
   }
 
-  SearchDto _mapCourse(SearchResponse searchResponse) {
+  SearchDto _mapSearch(SearchResponse searchResponse) {
     return searchResponse.toDto();
   }
 }

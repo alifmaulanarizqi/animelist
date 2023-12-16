@@ -108,8 +108,8 @@ class PrimaryButtonTextAndIcon extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius),
         side: BorderSide(
-          color: borderColor == null ? Colors.transparent : CommonColors.blueB5,
-          width: 1,
+          color: borderColor == null ? Colors.transparent : borderColor ?? CommonColors.white,
+          width: 2,
         ),
       ),
       child: InkWell(

@@ -3,7 +3,7 @@ import 'package:floor/floor.dart';
 @Entity(tableName: 'Anime')
 class AnimeEntity {
   @PrimaryKey(autoGenerate: true)
-  final int? id;
+  int? id;
   @ColumnInfo(name: 'mal_id')
   final int? malId;
   @ColumnInfo(name: 'title')
@@ -17,15 +17,15 @@ class AnimeEntity {
   @ColumnInfo(name: 'year')
   final int? year;
   @ColumnInfo(name: 'score')
-  final int? score;
+  int? score;
   @ColumnInfo(name: 'total_episode')
   final int? totalEpisode;
   @ColumnInfo(name: 'progress_episode')
-  final int? progressEpisode;
+  int progressEpisode;
   @ColumnInfo(name: 'is_completed')
-  final int? isCompleted;
+  int isCompleted;
 
-  const AnimeEntity({
+  AnimeEntity({
     this.id,
     this.malId,
     this.title,
@@ -35,8 +35,8 @@ class AnimeEntity {
     this.year,
     this.score,
     this.totalEpisode,
-    this.progressEpisode,
-    this.isCompleted,
+    this.progressEpisode = 1,
+    this.isCompleted = 0,
   });
 
   AnimeEntity copyWith({

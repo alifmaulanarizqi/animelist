@@ -216,6 +216,13 @@ class _$AnimeDao extends AnimeDao {
   }
 
   @override
+  Future<void> updateIsCompletedColumn(int id) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Anime SET is_completed = 1 WHERE id = ?1',
+        arguments: [id]);
+  }
+
+  @override
   Future<void> insertAnime(AnimeEntity animeEntity) async {
     await _animeEntityInsertionAdapter.insert(
         animeEntity, OnConflictStrategy.abort);

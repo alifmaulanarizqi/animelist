@@ -20,13 +20,14 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
     on<ListAnimeInitEvent>(_onInitListAnime);
     on<AddAnimeEpisodeEvent>(_onAddAnimeEpisode);
     on<ReduceAnimeEpisodeEvent>(_onReduceAnimeEpisode);
+    on<UpdateIsCompletedEvent>(_onUpdateIsCompleted);
   }
 
   void _onAddAnimeEpisode(
     AddAnimeEpisodeEvent event,
     Emitter<ListAnimeState> emit,
   ) async {
-    if(event.progressEpisode == 0) {
+    if(event.progressEpisode >= event.totalEpisode) {
       return;
     }
 
@@ -41,20 +42,45 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
         error: error,
       );
       emit(AddAnimeEpisodeFailedState(stateData));
-    }, (_) {
+    }, (_) async {
       var index = getIndexAnimeEntityById(
-          listAnime: stateData.animeEntity,
+          listAnime: stateData.uncompletedAnime,
           id: event.id
       );
-      stateData.animeEntity[index].progressEpisode++;
+      stateData.uncompletedAnime[index].progressEpisode++;
 
       stateData = stateData.copyWith(
-        animeEntity: stateData.animeEntity,
+        uncompletedAnime: stateData.uncompletedAnime,
         error: null,
       );
 
       emit(AddAnimeEpisodeSuccessState(stateData));
     });
+    //     ?.whenComplete(() async {
+    //   var index = getIndexAnimeEntityById(
+    //       listAnime: stateData.uncompletedAnime,
+    //       id: event.id
+    //   );
+    //
+    //   if(stateData.uncompletedAnime[index].progressEpisode == event.totalEpisode) {
+    //     stateData.uncompletedAnime[index].isCompleted = 1;
+    //
+    //     var resultUpdateIsCompleted = await listAnimeUseCase.updateIsCompletedColumn(
+    //       id: event.id,
+    //     );
+    //
+    //     resultUpdateIsCompleted.fold((ErrorDto error) {
+    //       stateData = stateData.copyWith(
+    //         error: error,
+    //       );
+    //     }, (_) {
+    //       stateData = stateData.copyWith(
+    //         uncompletedAnime: stateData.uncompletedAnime,
+    //         error: null,
+    //       );
+    //     });
+    //   }
+    // });
   }
 
   void _onReduceAnimeEpisode(
@@ -78,13 +104,13 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
       emit(ReduceAnimeEpisodeFailedState(stateData));
     }, (_) {
       var index = getIndexAnimeEntityById(
-          listAnime: stateData.animeEntity,
+          listAnime: stateData.uncompletedAnime,
           id: event.id
       );
-      stateData.animeEntity[index].progressEpisode--;
+      stateData.uncompletedAnime[index].progressEpisode--;
 
       stateData = stateData.copyWith(
-        animeEntity: stateData.animeEntity,
+        uncompletedAnime: stateData.uncompletedAnime,
         error: null,
       );
 
@@ -119,11 +145,52 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
     if (stateData.error != null) {
       emit(ListAnimeFailedState(stateData));
     } else {
-      if(stateData.animeEntity.isEmpty){
+      if(stateData.uncompletedAnime.isEmpty){
         emit(ListAnimeEmptyState(stateData));
       } else{
         emit(ListAnimeSuccessState(stateData));
       }
+    }
+  }
+
+  void _onUpdateIsCompleted(
+      UpdateIsCompletedEvent event,
+      Emitter<ListAnimeState> emit,
+  ) async {
+    print('waduuuh1');
+    emit(UpdateIsCompletedLoadingState(stateData));
+    Future.delayed(const Duration(seconds: 3)).then((_) {
+      print('waduuuhdelay');
+    });
+
+    var index = getIndexAnimeEntityById(
+      listAnime: stateData.uncompletedAnime,
+      id: event.id
+    );
+
+    if(stateData.uncompletedAnime[index].progressEpisode == event.totalEpisode) {
+      print('waduuuh2');
+      stateData.uncompletedAnime[index].isCompleted = 1;
+
+      var resultUpdateIsCompleted = await listAnimeUseCase.updateIsCompletedColumn(
+        id: event.id,
+      );
+
+      print('waduuuh3');
+      resultUpdateIsCompleted.fold((ErrorDto error) {
+        print('waduuuh4');
+        stateData = stateData.copyWith(
+          error: error,
+        );
+        emit(UpdateIsCompletedFailedState(stateData));
+      }, (_) {
+        print('waduuuh5');
+        stateData = stateData.copyWith(
+          uncompletedAnime: stateData.uncompletedAnime,
+          error: null,
+        );
+        emit(UpdateIsCompletedSuccessState(stateData));
+      });
     }
   }
 
@@ -139,10 +206,17 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
         error: error,
       );
     }, (right) {
-      stateData = stateData.copyWith(
-        animeEntity: right.data ?? [],
-        error: null,
-      );
+      if(tab == 0) {
+        stateData = stateData.copyWith(
+          uncompletedAnime: right.data ?? [],
+          error: null,
+        );
+      } else if(tab == 1) {
+        stateData = stateData.copyWith(
+          completedAnime: right.data ?? [],
+          error: null,
+        );
+      }
     });
   }
 

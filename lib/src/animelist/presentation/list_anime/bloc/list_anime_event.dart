@@ -18,14 +18,16 @@ class ListAnimeInitEvent extends ListAnimeEvent {
 class AddAnimeEpisodeEvent extends ListAnimeEvent {
   final int id;
   final int progressEpisode;
+  final int totalEpisode;
 
   const AddAnimeEpisodeEvent({
     required this.id,
     required this.progressEpisode,
+    required this.totalEpisode,
   });
 
   @override
-  List<Object?> get props => [id, progressEpisode];
+  List<Object?> get props => [id, progressEpisode, totalEpisode];
 }
 
 class ReduceAnimeEpisodeEvent extends ListAnimeEvent {
@@ -39,4 +41,17 @@ class ReduceAnimeEpisodeEvent extends ListAnimeEvent {
 
   @override
   List<Object?> get props => [id, progressEpisode];
+}
+
+class UpdateIsCompletedEvent extends ListAnimeEvent {
+  final int id;
+  final int totalEpisode;
+
+  const UpdateIsCompletedEvent({
+    required this.id,
+    required this.totalEpisode,
+  });
+
+  @override
+  List<Object?> get props => [id, totalEpisode];
 }

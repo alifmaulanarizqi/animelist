@@ -2,30 +2,35 @@ part of 'list_anime_bloc.dart';
 
 class ListAnimeStateData extends Equatable {
   final int? tab;
-  final List<AnimeEntity> animeEntity;
+  final List<AnimeEntity> uncompletedAnime;
+  final List<AnimeEntity> completedAnime;
   final ErrorDto? error;
 
   const ListAnimeStateData({
     this.tab = 0,
-    this.animeEntity = const [],
+    this.uncompletedAnime = const [],
+    this.completedAnime = const [],
     this.error
   });
 
   @override
   List<Object?> get props => [
     tab,
-    animeEntity,
+    uncompletedAnime,
+    completedAnime,
     error
   ];
 
   ListAnimeStateData copyWith({
     int? tab,
-    List<AnimeEntity>? animeEntity,
+    List<AnimeEntity>? uncompletedAnime,
+    List<AnimeEntity>? completedAnime,
     ErrorDto? error,
   }) {
     return ListAnimeStateData(
       tab: tab ?? this.tab,
-      animeEntity: animeEntity ?? this.animeEntity,
+      uncompletedAnime: uncompletedAnime ?? this.uncompletedAnime,
+      completedAnime: completedAnime ?? this.completedAnime,
       error: error ?? this.error,
     );
   }
@@ -83,4 +88,16 @@ class ReduceAnimeEpisodeSuccessState extends ListAnimeState {
 
 class ReduceAnimeEpisodeFailedState extends ListAnimeState {
   const ReduceAnimeEpisodeFailedState(super.data);
+}
+
+class UpdateIsCompletedLoadingState extends ListAnimeState {
+  const UpdateIsCompletedLoadingState(super.data);
+}
+
+class UpdateIsCompletedSuccessState extends ListAnimeState {
+  const UpdateIsCompletedSuccessState(super.data);
+}
+
+class UpdateIsCompletedFailedState extends ListAnimeState {
+  const UpdateIsCompletedFailedState(super.data);
 }

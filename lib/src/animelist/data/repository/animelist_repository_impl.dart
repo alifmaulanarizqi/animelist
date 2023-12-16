@@ -54,4 +54,11 @@ class AnimelistRepositoryImpl extends AnimelistRepository {
     return callOrError(() => _dao.deleteAnime(animeEntity));
   }
 
+  @override
+  FutureOrError<void> updateIsCompletedColumn({
+    required int id,
+  }) {
+    return callOrError(() => _dao.updateIsCompletedColumn(id));
+  }
+
 }

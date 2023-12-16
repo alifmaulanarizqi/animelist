@@ -23,7 +23,7 @@ class AnimeEntity {
   @ColumnInfo(name: 'progress_episode')
   int progressEpisode;
   @ColumnInfo(name: 'is_completed')
-  final int isCompleted;
+  int isCompleted;
 
   AnimeEntity({
     this.id,

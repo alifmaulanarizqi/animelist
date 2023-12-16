@@ -7,6 +7,8 @@ import 'package:fms/src/detail/domain/model/detail_dto.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../common_ui/widgets/common_state/common_error_state.dart';
+import '../../../../common_ui/widgets/dialogs/common_dialogs.dart';
+import '../../../../core/data/local/database/entities/anime_entity.dart';
 import '../../../detail/presentation/arg/detail_arg.dart';
 import '../../../detail/presentation/detail_page.dart';
 import '../add_anime/add_anime_page.dart';
@@ -78,7 +80,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
         body: TabBarView(
           children: [
             _buildUncompletedAnimeList(),
-            Icon(Icons.directions_bike),
+            _buildCompletedAnimeList(),
           ],
         ),
       ),
@@ -142,17 +144,93 @@ class _ListAnimePageState extends State<ListAnimePage> {
             return _buildEmptyListAnime(state: state);
           }
 
-          return _buildListAnime(state: state);
+          return _buildListAnime(uncompletedListAnime: state.data.uncompletedAnime);
+        },
+      ),
+    );
+  }
+
+  Widget _buildCompletedAnimeList() {
+    if(_bloc.isFirstLoadingCompleted) {
+      _bloc.add(ListAnimeInitEvent(
+          tab: _tabIndex
+      ));
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: BlocConsumer<ListAnimeBloc, ListAnimeState>(
+        bloc: _bloc,
+        listener: (context, state) {
+          if (state is AddAnimeEpisodeLoadingState || state is ReduceAnimeEpisodeLoadingState || state is UpdateIsCompletedLoadingState) {
+            _showLoadingForAddReduceProgressEpisode();
+          } else if(state is AddAnimeEpisodeSuccessState) {
+            Navigator.of(context).pop();
+            _showToast(
+                message: 'Successfully add episode'
+            );
+          } else if(state is AddAnimeEpisodeFailedState) {
+            Navigator.of(context).pop();
+            _showToast(
+                message: 'Failed to add episode'
+            );
+          } else if(state is ReduceAnimeEpisodeSuccessState) {
+            Navigator.of(context).pop();
+            _showToast(
+                message: 'Successfully reduce episode'
+            );
+          } else if(state is ReduceAnimeEpisodeFailedState) {
+            Navigator.of(context).pop();
+            _showToast(
+                message: 'Failed to reduce episode'
+            );
+          } else if(state is UpdateIsCompletedFailedState) {
+            Navigator.of(context).pop();
+            _showToast(
+                message: 'Failed to move entry to completed'
+            );
+          }
+        },
+        builder: (context, state) {
+          if(state is ListAnimeFailedState) {
+            return Column(
+              children: [
+                _buildFailedListAnime(state: state),
+                ElevatedButton(
+                  onPressed: () {
+                    _bloc.add(const ListAnimeInitEvent(
+                      tab: 0,
+                    ));
+                  },
+                  child: const Text('Refresh'),
+                ),
+              ],
+            );
+          } else if (state is ListAnimeLoadingState) {
+            return _buildShimmerLoading();
+          } else if (state is ListAnimeEmptyState) {
+            return _buildEmptyListAnime(state: state);
+          }
+
+          return _buildListAnime(completedListAnime: state.data.completedAnime);
         },
       ),
     );
   }
 
   Widget _buildListAnime({
-    required ListAnimeState state,
+    List<AnimeEntity>? uncompletedListAnime,
+    List<AnimeEntity>? completedListAnime,
   }) {
+    List<AnimeEntity> listAnime = [];
+    if(uncompletedListAnime != null) {
+      listAnime.addAll(uncompletedListAnime);
+    } else {
+      listAnime.addAll(completedListAnime as Iterable<AnimeEntity>);
+    }
+
     return ListView.builder(
-      itemCount: state.data.animeEntity.length,
+      itemCount: listAnime.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
@@ -160,7 +238,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
               context,
               DetailPage.route,
               arguments: DetailArg(
-                id: state.data.animeEntity[index].malId ?? 0
+                id: listAnime[index].malId ?? 0
               ),
             );
           },
@@ -175,7 +253,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                     height: 125,
                     width: 92,
                     child: Image.network(
-                      state.data.animeEntity[index].imageUrl ?? '',
+                      listAnime[index].imageUrl ?? '',
                       fit: BoxFit.cover,
                       loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) {
@@ -210,7 +288,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                     height: 4,
                                   ),
                                   Text(
-                                    state.data.animeEntity[index].title ?? '',
+                                    listAnime[index].title ?? '',
                                     style: CommonTypography.roboto16.copyWith(
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -221,7 +299,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                     height: 4,
                                   ),
                                   Text(
-                                    '${state.data.animeEntity[index].type}, ${state.data.animeEntity[index].season} ${state.data.animeEntity[index].year}',
+                                    '${listAnime[index].type}, ${listAnime[index].season} ${listAnime[index].year}',
                                   ),
                                   const SizedBox(
                                     height: 8,
@@ -236,15 +314,15 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                 iconData: Icons.edit,
                                 onTap: () {
                                   DetailDto detailDto = DetailDto(
-                                    id: state.data.animeEntity[index].id ?? 0,
-                                    malId: state.data.animeEntity[index].malId ?? 0,
-                                    title: state.data.animeEntity[index].title ?? '',
-                                    image: state.data.animeEntity[index].imageUrl ?? '',
-                                    type: state.data.animeEntity[index].type ?? '',
-                                    season: state.data.animeEntity[index].season ?? '',
-                                    year: state.data.animeEntity[index].year ?? 0,
-                                    score: state.data.animeEntity[index].score?.toDouble() ?? 0,
-                                    episode: state.data.animeEntity[index].totalEpisode ?? 0,
+                                    id: listAnime[index].id ?? 0,
+                                    malId: listAnime[index].malId ?? 0,
+                                    title: listAnime[index].title ?? '',
+                                    image: listAnime[index].imageUrl ?? '',
+                                    type: listAnime[index].type ?? '',
+                                    season: listAnime[index].season ?? '',
+                                    year: listAnime[index].year ?? 0,
+                                    score: listAnime[index].score?.toDouble() ?? 0,
+                                    episode: listAnime[index].totalEpisode ?? 0,
                                   );
 
                                   Navigator.pushNamed(
@@ -252,10 +330,13 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                     AddAnimePage.route,
                                     arguments: AnimelistArg(
                                       detailDto: detailDto,
-                                      progressEpisode: state.data.animeEntity[index].progressEpisode,
-                                      score: state.data.animeEntity[index].score ?? 0,
+                                      progressEpisode: listAnime[index].progressEpisode,
+                                      score: listAnime[index].score ?? 0,
                                     ),
                                   ).then((_) {
+                                    _bloc.isFirstLoadingUncompleted = true;
+                                    _bloc.isFirstLoadingCompleted = true;
+
                                     _bloc.add(ListAnimeInitEvent(
                                         tab: _tabIndex
                                     ));
@@ -265,8 +346,8 @@ class _ListAnimePageState extends State<ListAnimePage> {
                           ],
                         ),
                         LinearProgressIndicator(
-                          value: state.data.animeEntity[index].totalEpisode == null
-                              ? 1 : state.data.animeEntity[index].progressEpisode/(state.data.animeEntity[index].totalEpisode ?? 1),
+                          value: listAnime[index].totalEpisode == null
+                              ? 1 : listAnime[index].progressEpisode/(listAnime[index].totalEpisode ?? 1),
                           minHeight: 14,
                           color: CommonColors.green50,
                           backgroundColor: CommonColors.greenD9,
@@ -287,7 +368,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                   width: 2,
                                 ),
                                 Text(
-                                  state.data.animeEntity[index].score.toString(),
+                                  listAnime[index].score.toString(),
                                   style: CommonTypography.roboto16,
                                 )
                               ],
@@ -295,33 +376,57 @@ class _ListAnimePageState extends State<ListAnimePage> {
                             Row(
                               children: [
                                 Text(
-                                  '${state.data.animeEntity[index].progressEpisode} / ${state.data.animeEntity[index].totalEpisode} ep',
+                                  '${listAnime[index].progressEpisode} / ${listAnime[index].totalEpisode} ep',
                                   style: CommonTypography.roboto16,
                                 ),
                                 const SizedBox(
                                   width: 8,
                                 ),
+                                uncompletedListAnime != null ?
                                 _buildIconButton(
                                     iconData: Icons.remove,
                                     onTap: () {
                                       _bloc.add(ReduceAnimeEpisodeEvent(
-                                          id: state.data.animeEntity[index].id ?? 0,
-                                          progressEpisode: state.data.animeEntity[index].progressEpisode
+                                          id: listAnime[index].id ?? 0,
+                                          progressEpisode: listAnime[index].progressEpisode
                                       ));
                                     }
-                                ),
+                                ) : const SizedBox.shrink(),
                                 const SizedBox(
                                   width: 6,
                                 ),
+                                uncompletedListAnime != null ?
                                 _buildIconButton(
                                   iconData: Icons.add,
                                   onTap: () {
                                     _bloc.add(AddAnimeEpisodeEvent(
-                                        id: state.data.animeEntity[index].id ?? 0,
-                                        progressEpisode: state.data.animeEntity[index].progressEpisode
+                                      id: listAnime[index].id ?? 0,
+                                      progressEpisode: listAnime[index].progressEpisode,
+                                      totalEpisode: listAnime[index].totalEpisode ?? 1,
                                     ));
+
+                                    if(listAnime[index].progressEpisode+1 == listAnime[index].totalEpisode) {
+                                      CommonDialogs.showConfirmationDialog(
+                                          context,
+                                          title: 'Move this entry to completed?',
+                                          btnTextLeft: 'Cancel',
+                                          btnTextRight: 'Move',
+                                          onRightBtnClick: () {
+                                            _bloc.add(UpdateIsCompletedEvent(
+                                              id: listAnime[index].id ?? 0,
+                                              totalEpisode: listAnime[index].totalEpisode ?? 1,
+                                            ));
+
+                                            _bloc.isFirstLoadingUncompleted = true;
+                                            _bloc.isFirstLoadingCompleted = true;
+                                            _bloc.add(ListAnimeInitEvent(
+                                                tab: _tabIndex
+                                            ));
+                                          }
+                                      );
+                                    }
                                   }
-                                ),
+                                ) : const SizedBox.shrink(),
                               ],
                             ),
                           ],

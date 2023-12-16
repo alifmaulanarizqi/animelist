@@ -26,4 +26,8 @@ abstract class AnimelistRepository {
   FutureOrError<void> deleteAnime({
     required AnimeEntity animeEntity
   });
+
+  FutureOrError<void> updateIsCompletedColumn({
+    required int id
+  });
 }

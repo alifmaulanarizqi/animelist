@@ -67,4 +67,12 @@ class ListAnimeUseCase {
       id: id,
     );
   }
+
+  FutureOrError<void> updateIsCompletedColumn({
+    required int id,
+  }) async {
+    return _repository.updateIsCompletedColumn(
+      id: id,
+    );
+  }
 }

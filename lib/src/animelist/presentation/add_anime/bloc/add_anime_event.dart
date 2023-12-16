@@ -4,10 +4,10 @@ abstract class AddAnimeEvent extends Equatable {
   const AddAnimeEvent();
 }
 
-class AddAnimeInitEvent extends AddAnimeEvent {
+class AddAnimeSubmitEvent extends AddAnimeEvent {
   final AnimeEntity animeEntity;
 
-  const AddAnimeInitEvent({
+  const AddAnimeSubmitEvent({
     required this.animeEntity
   });
 
@@ -15,7 +15,24 @@ class AddAnimeInitEvent extends AddAnimeEvent {
   List<Object?> get props => [animeEntity];
 }
 
-class AddAnimeSubmitEvent extends AddAnimeEvent {
+class UpdateAnimeSubmitEvent extends AddAnimeEvent {
+  final AnimeEntity animeEntity;
+
+  const UpdateAnimeSubmitEvent({
+    required this.animeEntity
+  });
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [animeEntity];
+}
+
+class DeleteAnimeSubmitEvent extends AddAnimeEvent {
+  final AnimeEntity animeEntity;
+
+  const DeleteAnimeSubmitEvent({
+    required this.animeEntity
+  });
+
+  @override
+  List<Object?> get props => [animeEntity];
 }

@@ -14,16 +14,18 @@ class AddAnimeBloc extends Bloc<AddAnimeEvent, AddAnimeState> {
 
   AddAnimeBloc({required this.addAnimeUseCase})
       : super(const AddAnimeInitialState()) {
-    on<AddAnimeInitEvent>(_onInitAddAnime);
+    on<AddAnimeSubmitEvent>(_onAddAnime);
+    on<UpdateAnimeSubmitEvent>(_onUpdateAnime);
+    on<DeleteAnimeSubmitEvent>(_onDeleteAnime);
   }
 
-  void _onInitAddAnime(
-      AddAnimeInitEvent event,
+  void _onAddAnime(
+      AddAnimeSubmitEvent event,
       Emitter<AddAnimeState> emit,
   ) async {
     emit(AddAnimeLoadingState(stateData));
 
-    var result = await addAnimeUseCase.execute(
+    var result = await addAnimeUseCase.insert(
         animeEntity: event.animeEntity
     );
 
@@ -38,6 +40,54 @@ class AddAnimeBloc extends Bloc<AddAnimeEvent, AddAnimeState> {
       );
 
       emit(AddAnimeSuccessState(stateData));
+    });
+  }
+
+  void _onUpdateAnime(
+      UpdateAnimeSubmitEvent event,
+      Emitter<AddAnimeState> emit,
+  ) async {
+    emit(UpdateAnimeLoadingState(stateData));
+
+    var result = await addAnimeUseCase.update(
+        animeEntity: event.animeEntity
+    );
+
+    result.fold((ErrorDto error) {
+      stateData = stateData.copyWith(
+        error: error,
+      );
+      emit(UpdateAnimeFailedState(stateData));
+    }, (detailDto) {
+      stateData = stateData.copyWith(
+        error: null,
+      );
+
+      emit(UpdateAnimeSuccessState(stateData));
+    });
+  }
+
+  void _onDeleteAnime(
+      DeleteAnimeSubmitEvent event,
+      Emitter<AddAnimeState> emit,
+  ) async {
+    emit(DeleteAnimeLoadingState(stateData));
+
+    var result = await addAnimeUseCase.delete(
+        animeEntity: event.animeEntity
+    );
+
+    result.fold((ErrorDto error) {
+      stateData = stateData.copyWith(
+        error: error,
+      );
+      emit(DeleteAnimeFailedState(stateData));
+    }, (detailDto) {
+      stateData = stateData.copyWith(
+        error: null,
+      );
+
+      emit(DeleteAnimeSuccessState(stateData));
     });
   }
 }

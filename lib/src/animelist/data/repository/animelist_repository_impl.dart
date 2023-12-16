@@ -40,4 +40,18 @@ class AnimelistRepositoryImpl extends AnimelistRepository {
     return callOrError(() => _dao.reduceAnimeEpisode(id));
   }
 
+  @override
+  FutureOrError<void> updateAnime({
+    required AnimeEntity animeEntity
+  }) {
+    return callOrError(() => _dao.updateAnime(animeEntity));
+  }
+
+  @override
+  FutureOrError<void> deleteAnime({
+    required AnimeEntity animeEntity
+  }) {
+    return callOrError(() => _dao.deleteAnime(animeEntity));
+  }
+
 }

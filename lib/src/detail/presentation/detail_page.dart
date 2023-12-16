@@ -95,7 +95,7 @@ class _DetailPageState extends State<DetailPage> {
                     context,
                     AddAnimePage.route,
                     arguments: AnimelistArg(
-                        detailDto: state.data.detailDto
+                      detailDto: state.data.detailDto
                     ),
                   );
                 },

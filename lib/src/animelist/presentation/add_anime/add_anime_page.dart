@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fms/common_ui/widgets/button/primary_button_text_and_icon.dart';
+import 'package:fms/common_ui/widgets/dialogs/common_dialogs.dart';
 import 'package:fms/core/data/local/database/entities/anime_entity.dart';
 import 'package:fms/src/animelist/presentation/add_anime/arg/animelist_arg.dart';
 import 'package:fms/src/animelist/presentation/add_anime/bloc/add_anime_bloc.dart';
@@ -29,8 +30,9 @@ class _AddAnimePageState extends State<AddAnimePage> {
   late AddAnimeBloc _bloc;
 
   late DetailDto _detailDto;
-  int _episodePicker = 1;
-  int _scorePicker = 0;
+  late int _episodePicker;
+  late int _scorePicker;
+  String _tabBarTitle = 'Add Anime List';
 
   @override
   void initState() {
@@ -47,13 +49,18 @@ class _AddAnimePageState extends State<AddAnimePage> {
     );
     DetailDto detailDto = args?.detailDto ?? const DetailDto();
     _detailDto = detailDto;
+    if(args?.progressEpisode != null) {
+      _tabBarTitle = 'Edit Anime List';
+    }
+    _episodePicker = args?.progressEpisode ?? 1;
+    _scorePicker = args?.score ?? 0;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppbar(
-        textTitle: "Add Anime List",
+      appBar: CommonAppbar(
+        textTitle: _tabBarTitle,
         textColor: Colors.white,
         backgroundColor: CommonColors.blueB5,
       ),
@@ -61,13 +68,12 @@ class _AddAnimePageState extends State<AddAnimePage> {
         child: BlocConsumer<AddAnimeBloc, AddAnimeState>(
           bloc: _bloc,
           listener: (context, state) {
-            if(state is AddAnimeLoadingState) {
+            if(state is AddAnimeLoadingState || state is UpdateAnimeLoadingState || state is DeleteAnimeLoadingState) {
               _showLoading();
             } else if(state is AddAnimeSuccessState) {
               _displayToast(
-                  message: 'Successfully add anime'
+                message: 'Successfully add anime',
               );
-
               Future.delayed(const Duration(seconds: 1)).then((value) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   MainPage.route,
@@ -78,8 +84,29 @@ class _AddAnimePageState extends State<AddAnimePage> {
                 );
               });
             } else if (state is AddAnimeFailedState) {
+              Navigator.of(context).pop();
               _displayToast(
-                  message: state.data.error?.message ?? ''
+                message: state.data.error?.message ?? ''
+              );
+            } else if (state is UpdateAnimeSuccessState) {
+              Navigator.of(context).pop();
+              _displayToast(
+                message: 'Successfully update anime'
+              );
+            } else if (state is UpdateAnimeFailedState) {
+              Navigator.of(context).pop();
+              _displayToast(
+                message: state.data.error?.message ?? ''
+              );
+            } else if (state is DeleteAnimeSuccessState) {
+              Navigator.of(context).pop();
+              _displayToast(
+                message: 'Successfully delete anime'
+              );
+            } else if (state is DeleteAnimeFailedState) {
+              Navigator.of(context).pop();
+              _displayToast(
+                message: state.data.error?.message ?? ''
               );
             }
           },
@@ -166,9 +193,48 @@ class _AddAnimePageState extends State<AddAnimePage> {
                           isCompleted: _episodePicker == _detailDto.episode ? 1 : 0
                       );
 
-                      _bloc.add(AddAnimeInitEvent(animeEntity: animeEntity));
+                      if(_tabBarTitle == 'Edit Anime List') {
+                        animeEntity.id = _detailDto.id;
+                        _bloc.add(UpdateAnimeSubmitEvent(animeEntity: animeEntity));
+                      } else {
+                        _bloc.add(AddAnimeSubmitEvent(animeEntity: animeEntity));
+                      }
                     },
-                  )
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  _tabBarTitle == 'Edit Anime List' ?
+                  PrimaryButtonTextAndIcon(
+                    label: 'Delete From List',
+                    isActive: true,
+                    backgroundColor: CommonColors.red52,
+                    onTap: () {
+                      CommonDialogs.showConfirmationDialog(
+                        context,
+                        title: 'Are you sure want to delete?',
+                        btnTextLeft: 'Cancel',
+                        btnTextRight: 'Delete',
+                        onRightBtnClick: () {
+                          var animeEntity = AnimeEntity(
+                              id: _detailDto.id,
+                              malId: _detailDto.malId,
+                              title: _detailDto.title,
+                              imageUrl: _detailDto.image,
+                              type: _detailDto.type,
+                              season: _detailDto.season,
+                              year: _detailDto.year,
+                              score: _scorePicker,
+                              totalEpisode: _detailDto.episode,
+                              progressEpisode: _episodePicker,
+                              isCompleted: _episodePicker == _detailDto.episode ? 1 : 0
+                          );
+
+                          _bloc.add(DeleteAnimeSubmitEvent(animeEntity: animeEntity));
+                        }
+                      );
+                    },
+                  ) : const SizedBox.shrink(),
                 ],
               ),
             );

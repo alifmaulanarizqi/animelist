@@ -21,7 +21,7 @@ class AnimeEntity {
   @ColumnInfo(name: 'total_episode')
   final int? totalEpisode;
   @ColumnInfo(name: 'progress_episode')
-  final int? progressEpisode;
+  final int progressEpisode;
   @ColumnInfo(name: 'is_completed')
   final int? isCompleted;
 
@@ -35,7 +35,7 @@ class AnimeEntity {
     this.year,
     this.score,
     this.totalEpisode,
-    this.progressEpisode,
+    this.progressEpisode = 1,
     this.isCompleted,
   });
 

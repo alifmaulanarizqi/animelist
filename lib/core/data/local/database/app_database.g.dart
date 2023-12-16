@@ -85,7 +85,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Anime` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mal_id` INTEGER, `title` TEXT, `image_url` TEXT, `type` TEXT, `season` TEXT, `year` INTEGER, `score` INTEGER, `total_episode` INTEGER, `progress_episode` INTEGER, `is_completed` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `Anime` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mal_id` INTEGER, `title` TEXT, `image_url` TEXT, `type` TEXT, `season` TEXT, `year` INTEGER, `score` INTEGER, `total_episode` INTEGER, `progress_episode` INTEGER NOT NULL, `is_completed` INTEGER)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -142,7 +142,7 @@ class _$AnimeDao extends AnimeDao {
             year: row['year'] as int?,
             score: row['score'] as int?,
             totalEpisode: row['total_episode'] as int?,
-            progressEpisode: row['progress_episode'] as int?,
+            progressEpisode: row['progress_episode'] as int,
             isCompleted: row['is_completed'] as int?));
   }
 
@@ -159,7 +159,7 @@ class _$AnimeDao extends AnimeDao {
             year: row['year'] as int?,
             score: row['score'] as int?,
             totalEpisode: row['total_episode'] as int?,
-            progressEpisode: row['progress_episode'] as int?,
+            progressEpisode: row['progress_episode'] as int,
             isCompleted: row['is_completed'] as int?));
   }
 

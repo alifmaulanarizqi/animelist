@@ -20,6 +20,6 @@ abstract class LocalModule {
       await $FloorAppDatabase.databaseBuilder('app_database.db').build();
 
   @singleton
-   AnimeDao animeDao(AppDatabase appDatabase) =>
+  AnimeDao animeDao(AppDatabase appDatabase) =>
       appDatabase.animeDao;
 }

@@ -21,7 +21,7 @@ class SeasonUseCase {
       page: page,
       limit: limit,
     ).mapRight((response) {
-      var data = response.data?.map(_mapCourse).toList() ?? [];
+      var data = response.data?.map(_mapSeason).toList() ?? [];
 
       return BaseResponse(
         data: data,
@@ -31,7 +31,7 @@ class SeasonUseCase {
 
   }
 
-  SearchDto _mapCourse(SearchResponse searchResponse) {
+  SearchDto _mapSeason(SearchResponse searchResponse) {
     return searchResponse.toDto();
   }
 }

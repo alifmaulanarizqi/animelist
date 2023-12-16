@@ -35,5 +35,6 @@ class CommonColors {
   static const Color orange00 = Color(0xFFFF9800);
 
   static const Color green50 = Color(0xFF4CAF50);
+  static const Color greenD9 = Color(0xFFD9F6D9);
   static const Color red52 = Color(0xFFFF5252);
 }

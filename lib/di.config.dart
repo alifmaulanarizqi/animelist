@@ -16,40 +16,42 @@ import 'package:fms/core/data/local/database/dao/anime_dao.dart' as _i7;
 import 'package:fms/core/data/remote/interceptors/auth_interceptor.dart' as _i4;
 import 'package:fms/core/data/remote/interceptors/cookie_interceptor.dart'
     as _i5;
-import 'package:fms/core/di/local_module.dart' as _i23;
-import 'package:fms/core/di/network_module.dart' as _i24;
+import 'package:fms/core/di/local_module.dart' as _i24;
+import 'package:fms/core/di/network_module.dart' as _i25;
 import 'package:fms/src/animelist/data/repository/animelist_repository.dart'
     as _i8;
 import 'package:fms/src/animelist/data/repository/animelist_repository_impl.dart'
-    as _i26;
-import 'package:fms/src/animelist/di/animelist_di_module.dart' as _i25;
+    as _i27;
+import 'package:fms/src/animelist/di/animelist_di_module.dart' as _i26;
 import 'package:fms/src/animelist/domain/usecase/add_anime_usecase.dart'
-    as _i14;
-import 'package:fms/src/detail/data/remote/service/detail_service.dart' as _i15;
-import 'package:fms/src/detail/data/repository/detail_repository.dart' as _i21;
+    as _i15;
+import 'package:fms/src/animelist/domain/usecase/list_anime_usecase.dart'
+    as _i12;
+import 'package:fms/src/detail/data/remote/service/detail_service.dart' as _i16;
+import 'package:fms/src/detail/data/repository/detail_repository.dart' as _i22;
 import 'package:fms/src/detail/data/repository/detail_repository_impl.dart'
-    as _i28;
-import 'package:fms/src/detail/di/detail_di_module.dart' as _i27;
-import 'package:fms/src/detail/domain/usecase/detail_usecase.dart' as _i22;
+    as _i29;
+import 'package:fms/src/detail/di/detail_di_module.dart' as _i28;
+import 'package:fms/src/detail/domain/usecase/detail_usecase.dart' as _i23;
 import 'package:fms/src/example/data/remote/services/example_service.dart'
     as _i11;
 import 'package:fms/src/example/data/repository/example_repository.dart'
-    as _i16;
+    as _i17;
 import 'package:fms/src/example/data/repository/example_repository_impl.dart'
-    as _i30;
-import 'package:fms/src/example/di/example_di_module.dart' as _i29;
-import 'package:fms/src/search/data/remote/service/search_service.dart' as _i12;
-import 'package:fms/src/search/data/repository/search_repository.dart' as _i17;
+    as _i31;
+import 'package:fms/src/example/di/example_di_module.dart' as _i30;
+import 'package:fms/src/search/data/remote/service/search_service.dart' as _i13;
+import 'package:fms/src/search/data/repository/search_repository.dart' as _i18;
 import 'package:fms/src/search/data/repository/search_repository_impl.dart'
-    as _i32;
-import 'package:fms/src/search/di/search_di_module.dart' as _i31;
-import 'package:fms/src/search/domain/usecase/search_usecase.dart' as _i18;
-import 'package:fms/src/season/data/remote/service/season_service.dart' as _i13;
-import 'package:fms/src/season/data/repository/season_repository.dart' as _i19;
+    as _i33;
+import 'package:fms/src/search/di/search_di_module.dart' as _i32;
+import 'package:fms/src/search/domain/usecase/search_usecase.dart' as _i19;
+import 'package:fms/src/season/data/remote/service/season_service.dart' as _i14;
+import 'package:fms/src/season/data/repository/season_repository.dart' as _i20;
 import 'package:fms/src/season/data/repository/season_repository_impl.dart'
-    as _i34;
-import 'package:fms/src/season/di/season_di_module.dart' as _i33;
-import 'package:fms/src/season/domain/usecase/season_usecase.dart' as _i20;
+    as _i35;
+import 'package:fms/src/season/di/season_di_module.dart' as _i34;
+import 'package:fms/src/season/domain/usecase/season_usecase.dart' as _i21;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:shared_preferences/shared_preferences.dart' as _i6;
@@ -98,78 +100,80 @@ extension GetItInjectableX on _i1.GetIt {
     ));
     gh.singleton<_i11.ExampleService>(
         exampleDiModule.exampleService(gh<_i10.Dio>()));
-    gh.singleton<_i12.SearchService>(
+    gh.factory<_i12.ListAnimeUseCase>(() =>
+        animelistDiModule.listAnimeUseCase(gh<_i8.AnimelistRepository>()));
+    gh.singleton<_i13.SearchService>(
         searchDiModule.searchService(gh<_i10.Dio>()));
-    gh.singleton<_i13.SeasonService>(
+    gh.singleton<_i14.SeasonService>(
         seasonDiModule.seasonService(gh<_i10.Dio>()));
-    gh.factory<_i14.AddAnimeUseCase>(
+    gh.factory<_i15.AddAnimeUseCase>(
         () => animelistDiModule.addAnimeUseCase(gh<_i8.AnimelistRepository>()));
-    gh.singleton<_i15.DetailService>(
+    gh.singleton<_i16.DetailService>(
         detailDiModule.detailService(gh<_i10.Dio>()));
-    gh.singleton<_i16.ExampleRepository>(exampleDiModule.exampleRepository);
-    gh.singleton<_i17.SearchRepository>(searchDiModule.searchRepository);
-    gh.factory<_i18.SearchUseCase>(
-        () => searchDiModule.searchUseCase(gh<_i17.SearchRepository>()));
-    gh.singleton<_i19.SeasonRepository>(seasonDiModule.seasonRepository);
-    gh.factory<_i20.SeasonUseCase>(
-        () => seasonDiModule.seasonUseCase(gh<_i19.SeasonRepository>()));
-    gh.singleton<_i21.DetailRepository>(detailDiModule.searchRepository);
-    gh.factory<_i22.DetailUseCase>(
-        () => detailDiModule.detailUseCase(gh<_i21.DetailRepository>()));
+    gh.singleton<_i17.ExampleRepository>(exampleDiModule.exampleRepository);
+    gh.singleton<_i18.SearchRepository>(searchDiModule.searchRepository);
+    gh.factory<_i19.SearchUseCase>(
+        () => searchDiModule.searchUseCase(gh<_i18.SearchRepository>()));
+    gh.singleton<_i20.SeasonRepository>(seasonDiModule.seasonRepository);
+    gh.factory<_i21.SeasonUseCase>(
+        () => seasonDiModule.seasonUseCase(gh<_i20.SeasonRepository>()));
+    gh.singleton<_i22.DetailRepository>(detailDiModule.searchRepository);
+    gh.factory<_i23.DetailUseCase>(
+        () => detailDiModule.detailUseCase(gh<_i22.DetailRepository>()));
     return this;
   }
 }
 
-class _$LocalModule extends _i23.LocalModule {}
+class _$LocalModule extends _i24.LocalModule {}
 
-class _$NetworkModule extends _i24.NetworkModule {}
+class _$NetworkModule extends _i25.NetworkModule {}
 
-class _$AnimelistDiModule extends _i25.AnimelistDiModule {
+class _$AnimelistDiModule extends _i26.AnimelistDiModule {
   _$AnimelistDiModule(this._getIt);
 
   final _i1.GetIt _getIt;
 
   @override
-  _i26.AnimelistRepositoryImpl get animelistRepository =>
-      _i26.AnimelistRepositoryImpl(_getIt<_i7.AnimeDao>());
+  _i27.AnimelistRepositoryImpl get animelistRepository =>
+      _i27.AnimelistRepositoryImpl(_getIt<_i7.AnimeDao>());
 }
 
-class _$DetailDiModule extends _i27.DetailDiModule {
+class _$DetailDiModule extends _i28.DetailDiModule {
   _$DetailDiModule(this._getIt);
 
   final _i1.GetIt _getIt;
 
   @override
-  _i28.DetailRepositoryImpl get searchRepository =>
-      _i28.DetailRepositoryImpl(_getIt<_i15.DetailService>());
+  _i29.DetailRepositoryImpl get searchRepository =>
+      _i29.DetailRepositoryImpl(_getIt<_i16.DetailService>());
 }
 
-class _$ExampleDiModule extends _i29.ExampleDiModule {
+class _$ExampleDiModule extends _i30.ExampleDiModule {
   _$ExampleDiModule(this._getIt);
 
   final _i1.GetIt _getIt;
 
   @override
-  _i30.ExampleRepositoryImpl get exampleRepository =>
-      _i30.ExampleRepositoryImpl(_getIt<_i11.ExampleService>());
+  _i31.ExampleRepositoryImpl get exampleRepository =>
+      _i31.ExampleRepositoryImpl(_getIt<_i11.ExampleService>());
 }
 
-class _$SearchDiModule extends _i31.SearchDiModule {
+class _$SearchDiModule extends _i32.SearchDiModule {
   _$SearchDiModule(this._getIt);
 
   final _i1.GetIt _getIt;
 
   @override
-  _i32.SearchRepositoryImpl get searchRepository =>
-      _i32.SearchRepositoryImpl(_getIt<_i12.SearchService>());
+  _i33.SearchRepositoryImpl get searchRepository =>
+      _i33.SearchRepositoryImpl(_getIt<_i13.SearchService>());
 }
 
-class _$SeasonDiModule extends _i33.SeasonDiModule {
+class _$SeasonDiModule extends _i34.SeasonDiModule {
   _$SeasonDiModule(this._getIt);
 
   final _i1.GetIt _getIt;
 
   @override
-  _i34.SeasonRepositoryImpl get seasonRepository =>
-      _i34.SeasonRepositoryImpl(_getIt<_i13.SeasonService>());
+  _i35.SeasonRepositoryImpl get seasonRepository =>
+      _i35.SeasonRepositoryImpl(_getIt<_i14.SeasonService>());
 }

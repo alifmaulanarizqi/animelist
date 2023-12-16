@@ -7,6 +7,8 @@ import 'package:fms/src/detail/domain/model/detail_dto.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../common_ui/widgets/common_state/common_error_state.dart';
+import '../../../detail/presentation/arg/detail_arg.dart';
+import '../../../detail/presentation/detail_page.dart';
 import '../add_anime/add_anime_page.dart';
 import '../add_anime/arg/animelist_arg.dart';
 import 'bloc/list_anime_bloc.dart';
@@ -152,175 +154,186 @@ class _ListAnimePageState extends State<ListAnimePage> {
     return ListView.builder(
       itemCount: state.data.animeEntity.length,
       itemBuilder: (context, index) {
-        return Card(
-          color: CommonColors.white,
-          elevation: 1,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Row(
-              children: [
-                SizedBox(
-                  height: 125,
-                  width: 92,
-                  child: Image.network(
-                    state.data.animeEntity[index].imageUrl ?? '',
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
+        return GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              DetailPage.route,
+              arguments: DetailArg(
+                id: state.data.animeEntity[index].malId ?? 0
+              ),
+            );
+          },
+          child: Card(
+            color: CommonColors.white,
+            elevation: 1,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 125,
+                    width: 92,
+                    child: Image.network(
+                      state.data.animeEntity[index].imageUrl ?? '',
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
 
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                Text(
-                                  state.data.animeEntity[index].title ?? '',
-                                  style: CommonTypography.roboto16.copyWith(
-                                    fontWeight: FontWeight.w500,
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    height: 4,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  Text(
+                                    state.data.animeEntity[index].title ?? '',
+                                    style: CommonTypography.roboto16.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    '${state.data.animeEntity[index].type}, ${state.data.animeEntity[index].season} ${state.data.animeEntity[index].year}',
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            _buildIconButton(
+                                iconData: Icons.edit,
+                                onTap: () {
+                                  DetailDto detailDto = DetailDto(
+                                    id: state.data.animeEntity[index].id ?? 0,
+                                    malId: state.data.animeEntity[index].malId ?? 0,
+                                    title: state.data.animeEntity[index].title ?? '',
+                                    image: state.data.animeEntity[index].imageUrl ?? '',
+                                    type: state.data.animeEntity[index].type ?? '',
+                                    season: state.data.animeEntity[index].season ?? '',
+                                    year: state.data.animeEntity[index].year ?? 0,
+                                    score: state.data.animeEntity[index].score?.toDouble() ?? 0,
+                                    episode: state.data.animeEntity[index].totalEpisode ?? 0,
+                                  );
+
+                                  Navigator.pushNamed(
+                                    context,
+                                    AddAnimePage.route,
+                                    arguments: AnimelistArg(
+                                      detailDto: detailDto,
+                                      progressEpisode: state.data.animeEntity[index].progressEpisode,
+                                      score: state.data.animeEntity[index].score ?? 0,
+                                    ),
+                                  ).then((_) {
+                                    _bloc.add(ListAnimeInitEvent(
+                                        tab: _tabIndex
+                                    ));
+                                  });
+                                }
+                            ),
+                          ],
+                        ),
+                        LinearProgressIndicator(
+                          value: state.data.animeEntity[index].totalEpisode == null
+                              ? 1 : state.data.animeEntity[index].progressEpisode/(state.data.animeEntity[index].totalEpisode ?? 1),
+                          minHeight: 14,
+                          color: CommonColors.green50,
+                          backgroundColor: CommonColors.greenD9,
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.star_rate_rounded,
+                                  color: CommonColors.blueE9,
                                 ),
                                 const SizedBox(
-                                  height: 4,
+                                  width: 2,
                                 ),
                                 Text(
-                                  '${state.data.animeEntity[index].type}, ${state.data.animeEntity[index].season} ${state.data.animeEntity[index].year}',
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
+                                  state.data.animeEntity[index].score.toString(),
+                                  style: CommonTypography.roboto16,
+                                )
                               ],
                             ),
-                          ),
-                          const SizedBox(
-                            width: 4,
-                          ),
-                          _buildIconButton(
-                              iconData: Icons.edit,
-                              onTap: () {
-                                DetailDto detailDto = DetailDto(
-                                  id: state.data.animeEntity[index].id ?? 0,
-                                  malId: state.data.animeEntity[index].malId ?? 0,
-                                  title: state.data.animeEntity[index].title ?? '',
-                                  image: state.data.animeEntity[index].imageUrl ?? '',
-                                  type: state.data.animeEntity[index].type ?? '',
-                                  season: state.data.animeEntity[index].season ?? '',
-                                  year: state.data.animeEntity[index].year ?? 0,
-                                  score: state.data.animeEntity[index].score?.toDouble() ?? 0,
-                                  episode: state.data.animeEntity[index].totalEpisode ?? 0,
-                                );
-
-                                Navigator.pushNamed(
-                                  context,
-                                  AddAnimePage.route,
-                                  arguments: AnimelistArg(
-                                    detailDto: detailDto,
-                                    progressEpisode: state.data.animeEntity[index].progressEpisode,
-                                    score: state.data.animeEntity[index].score ?? 0,
-                                  ),
-                                ).then((_) {
-                                  _bloc.add(ListAnimeInitEvent(
-                                      tab: _tabIndex
-                                  ));
-                                });
-                              }
-                          ),
-                        ],
-                      ),
-                      LinearProgressIndicator(
-                        value: state.data.animeEntity[index].totalEpisode == null
-                            ? 1 : state.data.animeEntity[index].progressEpisode/(state.data.animeEntity[index].totalEpisode ?? 1),
-                        minHeight: 14,
-                        color: CommonColors.green50,
-                        backgroundColor: CommonColors.greenD9,
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.star_rate_rounded,
-                                color: CommonColors.blueE9,
-                              ),
-                              const SizedBox(
-                                width: 2,
-                              ),
-                              Text(
-                                state.data.animeEntity[index].score.toString(),
-                                style: CommonTypography.roboto16,
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                '${state.data.animeEntity[index].progressEpisode} / ${state.data.animeEntity[index].totalEpisode} ep',
-                                style: CommonTypography.roboto16,
-                              ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              _buildIconButton(
-                                  iconData: Icons.remove,
+                            Row(
+                              children: [
+                                Text(
+                                  '${state.data.animeEntity[index].progressEpisode} / ${state.data.animeEntity[index].totalEpisode} ep',
+                                  style: CommonTypography.roboto16,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                _buildIconButton(
+                                    iconData: Icons.remove,
+                                    onTap: () {
+                                      _bloc.add(ReduceAnimeEpisodeEvent(
+                                          id: state.data.animeEntity[index].id ?? 0,
+                                          progressEpisode: state.data.animeEntity[index].progressEpisode
+                                      ));
+                                    }
+                                ),
+                                const SizedBox(
+                                  width: 6,
+                                ),
+                                _buildIconButton(
+                                  iconData: Icons.add,
                                   onTap: () {
-                                    _bloc.add(ReduceAnimeEpisodeEvent(
+                                    _bloc.add(AddAnimeEpisodeEvent(
                                         id: state.data.animeEntity[index].id ?? 0,
                                         progressEpisode: state.data.animeEntity[index].progressEpisode
                                     ));
                                   }
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ),
-                              _buildIconButton(
-                                iconData: Icons.add,
-                                onTap: () {
-                                  _bloc.add(AddAnimeEpisodeEvent(
-                                      id: state.data.animeEntity[index].id ?? 0,
-                                      progressEpisode: state.data.animeEntity[index].progressEpisode
-                                  ));
-                                }
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                    ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

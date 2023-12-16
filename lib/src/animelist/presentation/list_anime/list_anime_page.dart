@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fms/common_ui/utils/colors/common_colors.dart';
 import 'package:fms/common_ui/utils/text_style/common_text_style.dart';
 import 'package:get_it/get_it.dart';
@@ -90,7 +91,33 @@ class _ListAnimePageState extends State<ListAnimePage> {
       padding: const EdgeInsets.all(12),
       child: BlocConsumer<ListAnimeBloc, ListAnimeState>(
         bloc: _bloc,
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is AddAnimeEpisodeLoadingState || state is ReduceAnimeEpisodeLoadingState) {
+            _showLoadingForAddReduceProgressEpisode();
+          } else if(state is AddAnimeEpisodeSuccessState) {
+            Navigator.of(context).pop();
+            _showToast(
+              message: 'Successfully add episode'
+            );
+            setState(() {});
+          } else if(state is AddAnimeEpisodeFailedState) {
+            Navigator.of(context).pop();
+            _showToast(
+              message: 'Failed to add episode'
+            );
+          } else if(state is ReduceAnimeEpisodeSuccessState) {
+            Navigator.of(context).pop();
+            _showToast(
+                message: 'Successfully reduce episode'
+            );
+            setState(() {});
+          } else if(state is ReduceAnimeEpisodeFailedState) {
+            Navigator.of(context).pop();
+            _showToast(
+                message: 'Failed to reduce episode'
+            );
+          }
+        },
         builder: (context, state) {
           if(state is ListAnimeFailedState) {
             return Column(
@@ -208,26 +235,9 @@ class _ListAnimePageState extends State<ListAnimePage> {
                           ),
                           Row(
                             children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                padding: const EdgeInsets.all(0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: CommonColors.blueE9,
-                                    width: 2.0,
-                                  ),
-                                ),
-                                child: IconButton(
-                                  onPressed: () {
-
-                                  },
-                                  icon: const Icon(
-                                    Icons.remove,
-                                    size: 20,
-                                  ),
-                                ),
+                              Text(
+                                '${state.data.animeEntity[index].progressEpisode} / ${state.data.animeEntity[index].totalEpisode} ep',
+                                style: CommonTypography.roboto16,
                               ),
                               const SizedBox(
                                 width: 8,
@@ -245,7 +255,45 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                 ),
                                 child: IconButton(
                                   onPressed: () {
+                                    int progressEpisode = state.data.animeEntity[index].progressEpisode;
 
+                                    if(progressEpisode > 0) {
+                                      _bloc.add(ReduceAnimeEpisodeEvent(
+                                          id: state.data.animeEntity[index].id ?? 0,
+                                          progressEpisode: state.data.animeEntity[index].progressEpisode
+                                      ));
+                                    } else {
+                                      _showToast(
+                                        message: 'Your progress episode is 0, so it cannot reduce',
+                                      );
+                                    }
+                                  },
+                                  icon: const Icon(
+                                    Icons.remove,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 6,
+                              ),
+                              Container(
+                                width: 40,
+                                height: 40,
+                                padding: const EdgeInsets.all(0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: CommonColors.blueE9,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    _bloc.add(AddAnimeEpisodeEvent(
+                                        id: state.data.animeEntity[index].id ?? 0,
+                                        progressEpisode: state.data.animeEntity[index].progressEpisode
+                                    ));
                                   },
                                   icon: const Icon(
                                     Icons.add,
@@ -299,6 +347,31 @@ class _ListAnimePageState extends State<ListAnimePage> {
   Widget _buildShimmerLoading() {
     return const Center(
       child: CircularProgressIndicator(),
+    );
+  }
+
+  void _showLoadingForAddReduceProgressEpisode() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+    );
+  }
+
+  void _showToast({
+    required String message
+  }) {
+    Fluttertoast.showToast(
+        backgroundColor: CommonColors.whiteF8,
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        textColor: CommonColors.black21,
+        fontSize: 16.0
     );
   }
 

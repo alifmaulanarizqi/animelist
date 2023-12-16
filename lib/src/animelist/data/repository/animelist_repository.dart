@@ -10,4 +10,12 @@ abstract class AnimelistRepository {
   FutureOrError<void> insertAnime({
     required AnimeEntity animeEntity
   });
+
+  FutureOrError<void> addAnimeEpisode({
+    required int id
+  });
+
+  FutureOrError<void> reduceAnimeEpisode({
+    required int id
+  });
 }

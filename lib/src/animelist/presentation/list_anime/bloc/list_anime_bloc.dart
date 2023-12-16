@@ -18,6 +18,82 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
     required this.listAnimeUseCase,
   }) : super(const ListAnimeInitialState()) {
     on<ListAnimeInitEvent>(_onInitListAnime);
+    on<AddAnimeEpisodeEvent>(_onAddAnimeEpisode);
+    on<ReduceAnimeEpisodeEvent>(_onReduceAnimeEpisode);
+  }
+
+  void _onAddAnimeEpisode(
+    AddAnimeEpisodeEvent event,
+    Emitter<ListAnimeState> emit,
+  ) async {
+    if(event.progressEpisode == 0) {
+      return;
+    }
+
+    emit(AddAnimeEpisodeLoadingState(stateData));
+
+    var result = await listAnimeUseCase.addAnimeEpisode(
+      id: event.id,
+    );
+
+    result.fold((ErrorDto error) {
+      stateData = stateData.copyWith(
+        error: error,
+      );
+      emit(AddAnimeEpisodeFailedState(stateData));
+    }, (_) {
+      var index = getIndexAnimeEntityById(
+          listAnime: stateData.animeEntity,
+          id: event.id
+      );
+      stateData.animeEntity[index].progressEpisode++;
+
+      stateData = stateData.copyWith(
+        animeEntity: stateData.animeEntity,
+        error: null,
+      );
+
+      emit(AddAnimeEpisodeSuccessState(stateData));
+    });
+  }
+
+  void _onReduceAnimeEpisode(
+    ReduceAnimeEpisodeEvent event,
+    Emitter<ListAnimeState> emit,
+  ) async {
+    if(event.progressEpisode == 0) {
+      return;
+    }
+
+    emit(ReduceAnimeEpisodeLoadingState(stateData));
+
+    var result = await listAnimeUseCase.reduceAnimeEpisode(
+      id: event.id,
+    );
+
+    result.fold((ErrorDto error) {
+      stateData = stateData.copyWith(
+        error: error,
+      );
+      emit(ReduceAnimeEpisodeFailedState(stateData));
+    }, (_) {
+      var index = getIndexAnimeEntityById(
+          listAnime: stateData.animeEntity,
+          id: event.id
+      );
+      stateData.animeEntity[index].progressEpisode--;
+
+      stateData = stateData.copyWith(
+        animeEntity: stateData.animeEntity,
+        error: null,
+      );
+
+      stateData = stateData.copyWith(
+        error: null,
+      );
+
+      emit(ReduceAnimeEpisodeSuccessState(stateData));
+    });
   }
 
   void _onInitListAnime(
@@ -54,7 +130,7 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
   Future _doSearch({
     int? tab,
   }) async {
-    var result = await listAnimeUseCase.execute(
+    var result = await listAnimeUseCase.getAnimeList(
       tab: tab,
     );
 
@@ -68,5 +144,18 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
         error: null,
       );
     });
+  }
+
+  int getIndexAnimeEntityById({
+    required List<AnimeEntity> listAnime,
+    required int id,
+  }) {
+    for (int i = 0; i < listAnime.length; i++) {
+      if(listAnime[i].id == id) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 }

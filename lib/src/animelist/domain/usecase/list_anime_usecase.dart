@@ -10,7 +10,7 @@ class ListAnimeUseCase {
 
   ListAnimeUseCase(this._repository);
 
-  FutureOrError<BaseResponse<List<AnimeEntity>>> execute({
+  FutureOrError<BaseResponse<List<AnimeEntity>>> getAnimeList({
     int? tab,
   }) async {
     if(tab == 0) {
@@ -50,5 +50,21 @@ class ListAnimeUseCase {
         );
       });
     }
+  }
+
+  FutureOrError<void> addAnimeEpisode({
+    required int id,
+  }) async {
+    return _repository.addAnimeEpisode(
+      id: id,
+    );
+  }
+
+  FutureOrError<void> reduceAnimeEpisode({
+    required int id,
+  }) async {
+    return _repository.reduceAnimeEpisode(
+      id: id,
+    );
   }
 }

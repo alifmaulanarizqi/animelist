@@ -17,15 +17,15 @@ class AnimeEntity {
   @ColumnInfo(name: 'year')
   final int? year;
   @ColumnInfo(name: 'score')
-  final int? score;
+  int? score;
   @ColumnInfo(name: 'total_episode')
   final int? totalEpisode;
   @ColumnInfo(name: 'progress_episode')
-  final int progressEpisode;
+  int progressEpisode;
   @ColumnInfo(name: 'is_completed')
   final int? isCompleted;
 
-  const AnimeEntity({
+  AnimeEntity({
     this.id,
     this.malId,
     this.title,

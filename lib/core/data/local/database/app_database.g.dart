@@ -164,6 +164,20 @@ class _$AnimeDao extends AnimeDao {
   }
 
   @override
+  Future<void> addAnimeEpisode(int id) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Anime SET progress_episode = progress_episode + 1 WHERE id = ?1',
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> reduceAnimeEpisode(int id) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Anime SET progress_episode = progress_episode - 1 WHERE id = ?1',
+        arguments: [id]);
+  }
+
+  @override
   Future<void> insertAnime(AnimeEntity animeEntity) async {
     await _animeEntityInsertionAdapter.insert(
         animeEntity, OnConflictStrategy.abort);

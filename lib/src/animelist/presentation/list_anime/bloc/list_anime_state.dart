@@ -60,3 +60,27 @@ class ListAnimeSuccessState extends ListAnimeState {
 class ListAnimeEmptyState extends ListAnimeState {
   const ListAnimeEmptyState(super.data);
 }
+
+class AddAnimeEpisodeLoadingState extends ListAnimeState {
+  const AddAnimeEpisodeLoadingState(super.data);
+}
+
+class AddAnimeEpisodeSuccessState extends ListAnimeState {
+  const AddAnimeEpisodeSuccessState(super.data);
+}
+
+class AddAnimeEpisodeFailedState extends ListAnimeState {
+  const AddAnimeEpisodeFailedState(super.data);
+}
+
+class ReduceAnimeEpisodeLoadingState extends ListAnimeState {
+  const ReduceAnimeEpisodeLoadingState(super.data);
+}
+
+class ReduceAnimeEpisodeSuccessState extends ListAnimeState {
+  const ReduceAnimeEpisodeSuccessState(super.data);
+}
+
+class ReduceAnimeEpisodeFailedState extends ListAnimeState {
+  const ReduceAnimeEpisodeFailedState(super.data);
+}

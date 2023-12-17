@@ -1,4 +1,5 @@
 import 'package:either_dart/either.dart';
+import 'package:fms/core/data/local/database/entities/anime_entity.dart';
 import 'package:fms/core/data/remote/responses/base_response.dart';
 import 'package:fms/src/detail/domain/mapper/detail_mapper.dart';
 
@@ -11,14 +12,26 @@ class DetailUseCase {
 
   DetailUseCase(this._repository);
 
-  FutureOrError<BaseResponse<DetailDto>> execute({
-    required int id,
+  FutureOrError<BaseResponse<DetailDto>> getAnimeDetail({
+    required int malId,
   }) async {
     return _repository.getAnimeDetail(
-      id: id,
+      malId: malId,
     ).mapRight((response) {
       return BaseResponse(
         data: response.data.toDto()
+      );
+    });
+  }
+
+  FutureOrError<BaseResponse<AnimeEntity>> getAnimeByMalIdLocal({
+    required int malId,
+  }) async {
+    return _repository.getAnimeByMalIdLocal(
+      malId: malId,
+    ).mapRight((response) {
+      return BaseResponse(
+          data: response
       );
     });
   }

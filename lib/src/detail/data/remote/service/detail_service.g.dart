@@ -19,7 +19,7 @@ class _DetailService implements DetailService {
   String? baseUrl;
 
   @override
-  Future<BaseResponse<DetailResponse>> getAnimeDetail({int? id}) async {
+  Future<BaseResponse<DetailResponse>> getAnimeDetail({int? malId}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -33,7 +33,7 @@ class _DetailService implements DetailService {
     )
             .compose(
               _dio.options,
-              '/anime/${id}/full',
+              '/anime/${malId}/full',
               queryParameters: queryParameters,
               data: _data,
             )

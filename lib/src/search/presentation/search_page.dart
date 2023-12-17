@@ -161,7 +161,7 @@ class _SearchPageState extends State<SearchPage> {
                   context,
                   DetailPage.route,
                   arguments: DetailArg(
-                      id: state.data.searchDto[index].malId
+                    id: state.data.searchDto[index].malId,
                   ),
                 );
               },

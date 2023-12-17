@@ -5,12 +5,23 @@ abstract class DetailEvent extends Equatable {
 }
 
 class DetailInitEvent extends DetailEvent {
-  final int id;
+  final int malId;
 
   const DetailInitEvent({
-    required this.id,
+    required this.malId,
   });
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [malId];
+}
+
+class GetAnimeLocalEvent extends DetailEvent {
+  final int malId;
+
+  const GetAnimeLocalEvent({
+    required this.malId,
+  });
+
+  @override
+  List<Object?> get props => [malId];
 }

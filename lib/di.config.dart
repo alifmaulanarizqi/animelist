@@ -144,8 +144,10 @@ class _$DetailDiModule extends _i28.DetailDiModule {
   final _i1.GetIt _getIt;
 
   @override
-  _i29.DetailRepositoryImpl get searchRepository =>
-      _i29.DetailRepositoryImpl(_getIt<_i16.DetailService>());
+  _i29.DetailRepositoryImpl get searchRepository => _i29.DetailRepositoryImpl(
+        _getIt<_i16.DetailService>(),
+        _getIt<_i7.AnimeDao>(),
+      );
 }
 
 class _$ExampleDiModule extends _i30.ExampleDiModule {

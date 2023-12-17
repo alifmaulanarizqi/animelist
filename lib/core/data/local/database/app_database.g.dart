@@ -223,6 +223,24 @@ class _$AnimeDao extends AnimeDao {
   }
 
   @override
+  Future<AnimeEntity?> getAnimeByMalId(int malId) async {
+    return _queryAdapter.query('SELECT * FROM Anime WHERE mal_id = ?1',
+        mapper: (Map<String, Object?> row) => AnimeEntity(
+            id: row['id'] as int?,
+            malId: row['mal_id'] as int?,
+            title: row['title'] as String?,
+            imageUrl: row['image_url'] as String?,
+            type: row['type'] as String?,
+            season: row['season'] as String?,
+            year: row['year'] as int?,
+            score: row['score'] as int?,
+            totalEpisode: row['total_episode'] as int?,
+            progressEpisode: row['progress_episode'] as int,
+            isCompleted: row['is_completed'] as int),
+        arguments: [malId]);
+  }
+
+  @override
   Future<void> insertAnime(AnimeEntity animeEntity) async {
     await _animeEntityInsertionAdapter.insert(
         animeEntity, OnConflictStrategy.abort);

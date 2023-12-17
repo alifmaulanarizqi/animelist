@@ -1,5 +1,7 @@
 class DetailArg {
   final int id;
 
-  DetailArg({required this.id});
+  DetailArg({
+    required this.id,
+  });
 }

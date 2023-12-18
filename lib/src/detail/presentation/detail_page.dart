@@ -134,7 +134,7 @@ class _DetailPageState extends State<DetailPage> {
                     arguments: AnimelistArg(
                       detailDto: detailDto,
                       progressEpisode: state.data.animeEntity?.progressEpisode,
-                      score: state.data.animeEntity?.score,
+                      userScore: state.data.animeEntity?.score,
                     ),
                   );
                 },

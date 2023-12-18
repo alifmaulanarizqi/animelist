@@ -1,6 +1,7 @@
 import 'package:either_dart/either.dart';
 import 'package:fms/src/season/domain/mapper/season_mapper.dart';
 
+import '../../../../core/data/local/database/entities/anime_entity.dart';
 import '../../../../core/data/remote/responses/base_response.dart';
 import '../../../../core/utils/typedef_util.dart';
 import '../../../search/data/remote/response/search_response.dart';
@@ -12,7 +13,7 @@ class SeasonUseCase {
 
   SeasonUseCase(this._repository);
 
-  FutureOrError<BaseResponse<List<SearchDto>>> execute({
+  FutureOrError<BaseResponse<List<SearchDto>>> getSeasonNow({
     int? page,
     int? limit,
     String? q,
@@ -28,7 +29,18 @@ class SeasonUseCase {
         pagination: response.pagination,
       );
     });
+  }
 
+  FutureOrError<BaseResponse<AnimeEntity>> getAnimeByMalIdLocal({
+    required int malId,
+  }) async {
+    return _repository.getAnimeByMalIdLocal(
+      malId: malId,
+    ).mapRight((response) {
+      return BaseResponse(
+          data: response
+      );
+    });
   }
 
   SearchDto _mapSeason(SearchResponse searchResponse) {

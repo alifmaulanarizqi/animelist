@@ -16,6 +16,7 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
   SeasonBloc({required this.seasonUseCase})
       : super(const SeasonInitialState()) {
     on<SeasonInitEvent>(_onInitSearch);
+    on<GetAnimeLocalEvent>(_onGetAnimeLocal);
   }
 
   void _onInitSearch(
@@ -51,13 +52,54 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
     }
   }
 
+  void _onGetAnimeLocal(
+    GetAnimeLocalEvent event,
+    Emitter<SeasonState> emit,
+  ) async {
+    // emit(GetAnimeLocalLoadingState(stateData));
+
+    var result = await seasonUseCase.getAnimeByMalIdLocal(
+      malId: event.malId
+    );
+
+    result.fold((ErrorDto error) {
+      stateData = stateData.copyWith(
+        error: error,
+      );
+      // emit(GetAnimeLocalFailedState(stateData));
+    }, (anime) {
+      if(anime.data != null) {
+        var index = _getIndexAnimeEntityById(
+          listAnime: stateData.seasonDto,
+          malId: anime.data?.malId ?? 0
+        );
+
+        stateData.seasonDto[index].id = anime.data?.id;
+        stateData.seasonDto[index].isInDB = true;
+        stateData.seasonDto[index].userScore = anime.data?.score ?? 0;
+        stateData.seasonDto[index].progressEpisode = anime.data?.progressEpisode ?? 0;
+
+        stateData = stateData.copyWith(
+          error: null,
+          seasonDto: stateData.seasonDto,
+        );
+        emit(GetAnimeLocalSuccessState(stateData));
+      } else {
+        stateData = stateData.copyWith(
+          error: null,
+        );
+        // emit(GetAnimeLocalNoDataState(stateData));
+      }
+    });
+  }
+
   Future _doSearch({
     int page = 1,
     int limit = 10,
   }) async {
     stateData = stateData.copyWith(currentPage: page);
 
-    var result = await seasonUseCase.execute(
+    var result = await seasonUseCase.getSeasonNow(
         page: page,
         limit: limit,
     );
@@ -91,5 +133,18 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
         );
       }
     });
+  }
+
+  int _getIndexAnimeEntityById({
+    required List<SearchDto> listAnime,
+    required int malId,
+  }) {
+    for (int i = 0; i < listAnime.length; i++) {
+      if(listAnime[i].malId == malId) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 }

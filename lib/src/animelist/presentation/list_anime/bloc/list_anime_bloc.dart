@@ -154,14 +154,10 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
   }
 
   void _onUpdateIsCompleted(
-      UpdateIsCompletedEvent event,
-      Emitter<ListAnimeState> emit,
+    UpdateIsCompletedEvent event,
+    Emitter<ListAnimeState> emit,
   ) async {
-    print('waduuuh1');
     emit(UpdateIsCompletedLoadingState(stateData));
-    Future.delayed(const Duration(seconds: 3)).then((_) {
-      print('waduuuhdelay');
-    });
 
     var index = getIndexAnimeEntityById(
       listAnime: stateData.uncompletedAnime,
@@ -169,22 +165,18 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
     );
 
     if(stateData.uncompletedAnime[index].progressEpisode == event.totalEpisode) {
-      print('waduuuh2');
       stateData.uncompletedAnime[index].isCompleted = 1;
 
       var resultUpdateIsCompleted = await listAnimeUseCase.updateIsCompletedColumn(
         id: event.id,
       );
 
-      print('waduuuh3');
       resultUpdateIsCompleted.fold((ErrorDto error) {
-        print('waduuuh4');
         stateData = stateData.copyWith(
           error: error,
         );
         emit(UpdateIsCompletedFailedState(stateData));
       }, (_) {
-        print('waduuuh5');
         stateData = stateData.copyWith(
           uncompletedAnime: stateData.uncompletedAnime,
           error: null,

@@ -52,7 +52,7 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
     emit(GetAnimeLocalLoadingState(stateData));
 
     var result = await detailUseCase.getAnimeByMalIdLocal(
-        malId: event.malId
+      malId: event.malId
     );
 
     result.fold((ErrorDto error) {

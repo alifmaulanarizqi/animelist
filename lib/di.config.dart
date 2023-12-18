@@ -176,6 +176,8 @@ class _$SeasonDiModule extends _i34.SeasonDiModule {
   final _i1.GetIt _getIt;
 
   @override
-  _i35.SeasonRepositoryImpl get seasonRepository =>
-      _i35.SeasonRepositoryImpl(_getIt<_i14.SeasonService>());
+  _i35.SeasonRepositoryImpl get seasonRepository => _i35.SeasonRepositoryImpl(
+        _getIt<_i14.SeasonService>(),
+        _getIt<_i7.AnimeDao>(),
+      );
 }

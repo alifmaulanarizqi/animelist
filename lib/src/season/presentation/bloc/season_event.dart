@@ -14,3 +14,14 @@ class SeasonInitEvent extends SeasonEvent {
   @override
   List<Object?> get props => [page];
 }
+
+class GetAnimeLocalEvent extends SeasonEvent {
+  final int malId;
+
+  const GetAnimeLocalEvent({
+    required this.malId,
+  });
+
+  @override
+  List<Object?> get props => [malId];
+}

@@ -75,3 +75,19 @@ class SeasonSuccessState extends SeasonState {
 class SeasonEmptyState extends SeasonState {
   const SeasonEmptyState(super.data);
 }
+
+class GetAnimeLocalLoadingState extends SeasonState {
+  const GetAnimeLocalLoadingState(super.data);
+}
+
+class GetAnimeLocalFailedState extends SeasonState {
+  const GetAnimeLocalFailedState(super.data);
+}
+
+class GetAnimeLocalSuccessState extends SeasonState {
+  const GetAnimeLocalSuccessState(super.data);
+}
+
+class GetAnimeLocalNoDataState extends SeasonState {
+  const GetAnimeLocalNoDataState(super.data);
+}

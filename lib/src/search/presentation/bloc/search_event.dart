@@ -16,3 +16,14 @@ class SearchInitEvent extends SearchEvent {
   @override
   List<Object?> get props => [page, q];
 }
+
+class GetAnimeLocalEvent extends SearchEvent {
+  final int malId;
+
+  const GetAnimeLocalEvent({
+    required this.malId,
+  });
+
+  @override
+  List<Object?> get props => [malId];
+}

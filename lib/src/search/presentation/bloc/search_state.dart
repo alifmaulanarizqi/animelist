@@ -75,3 +75,19 @@ class SearchSuccessState extends SearchState {
 class SearchEmptyState extends SearchState {
   const SearchEmptyState(super.data);
 }
+
+class GetAnimeLocalLoadingState extends SearchState {
+  const GetAnimeLocalLoadingState(super.data);
+}
+
+class GetAnimeLocalFailedState extends SearchState {
+  const GetAnimeLocalFailedState(super.data);
+}
+
+class GetAnimeLocalSuccessState extends SearchState {
+  const GetAnimeLocalSuccessState(super.data);
+}
+
+class GetAnimeLocalNoDataState extends SearchState {
+  const GetAnimeLocalNoDataState(super.data);
+}

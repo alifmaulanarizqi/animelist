@@ -16,6 +16,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   SearchBloc({required this.searchUseCase})
       : super(const SearchInitialState()) {
     on<SearchInitEvent>(_onInitSearch);
+    on<GetAnimeLocalEvent>(_onGetAnimeLocal);
   }
 
   void _onInitSearch(
@@ -49,6 +50,47 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         emit(SearchSuccessState(stateData));
       }
     }
+  }
+
+  void _onGetAnimeLocal(
+      GetAnimeLocalEvent event,
+      Emitter<SearchState> emit,
+      ) async {
+    // emit(GetAnimeLocalLoadingState(stateData));
+
+    var result = await searchUseCase.getAnimeByMalIdLocal(
+        malId: event.malId
+    );
+
+    result.fold((ErrorDto error) {
+      stateData = stateData.copyWith(
+        error: error,
+      );
+      // emit(GetAnimeLocalFailedState(stateData));
+    }, (anime) {
+      if(anime.data?.title != null) {
+        var index = _getIndexAnimeEntityById(
+            listAnime: stateData.searchDto,
+            malId: anime.data?.malId ?? 0
+        );
+
+        stateData.searchDto[index].id = anime.data?.id;
+        stateData.searchDto[index].isInDB = true;
+        stateData.searchDto[index].userScore = anime.data?.score ?? 0;
+        stateData.searchDto[index].progressEpisode = anime.data?.progressEpisode ?? 0;
+
+        stateData = stateData.copyWith(
+          error: null,
+          searchDto: stateData.searchDto,
+        );
+        emit(GetAnimeLocalSuccessState(stateData));
+      } else {
+        stateData = stateData.copyWith(
+          error: null,
+        );
+        // emit(GetAnimeLocalNoDataState(stateData));
+      }
+    });
   }
 
   Future _doSearch({
@@ -93,5 +135,18 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         );
       }
     });
+  }
+
+  int _getIndexAnimeEntityById({
+    required List<SearchDto> listAnime,
+    required int malId,
+  }) {
+    for (int i = 0; i < listAnime.length; i++) {
+      if(listAnime[i].malId == malId) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 }

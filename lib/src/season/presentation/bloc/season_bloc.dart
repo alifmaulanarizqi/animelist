@@ -68,7 +68,7 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
       );
       // emit(GetAnimeLocalFailedState(stateData));
     }, (anime) {
-      if(anime.data != null) {
+      if(anime.data?.title != null) {
         var index = _getIndexAnimeEntityById(
           listAnime: stateData.seasonDto,
           malId: anime.data?.malId ?? 0

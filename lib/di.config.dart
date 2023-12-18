@@ -166,8 +166,10 @@ class _$SearchDiModule extends _i32.SearchDiModule {
   final _i1.GetIt _getIt;
 
   @override
-  _i33.SearchRepositoryImpl get searchRepository =>
-      _i33.SearchRepositoryImpl(_getIt<_i13.SearchService>());
+  _i33.SearchRepositoryImpl get searchRepository => _i33.SearchRepositoryImpl(
+        _getIt<_i13.SearchService>(),
+        _getIt<_i7.AnimeDao>(),
+      );
 }
 
 class _$SeasonDiModule extends _i34.SeasonDiModule {

@@ -4,6 +4,7 @@ import 'package:fms/src/search/data/remote/response/search_response.dart';
 import 'package:fms/src/search/data/repository/search_repository.dart';
 import 'package:fms/src/search/domain/mapper/search_mapper.dart';
 
+import '../../../../core/data/local/database/entities/anime_entity.dart';
 import '../../../../core/utils/typedef_util.dart';
 import '../model/search_dto.dart';
 
@@ -29,7 +30,18 @@ class SearchUseCase {
         pagination: response.pagination,
       );
     });
+  }
 
+  FutureOrError<BaseResponse<AnimeEntity>> getAnimeByMalIdLocal({
+    required int malId,
+  }) async {
+    return _repository.getAnimeByMalIdLocal(
+      malId: malId,
+    ).mapRight((response) {
+      return BaseResponse(
+          data: response
+      );
+    });
   }
 
   SearchDto _mapSearch(SearchResponse searchResponse) {

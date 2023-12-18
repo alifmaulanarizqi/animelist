@@ -25,13 +25,13 @@ class ListAnimePage extends StatefulWidget {
 }
 
 class _ListAnimePageState extends State<ListAnimePage> {
-  late ListAnimeBloc _bloc;
+  late ListAnimeBloc _listAnimeBloc;
   int _tabIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _bloc = ListAnimeBloc(
+    _listAnimeBloc = ListAnimeBloc(
       listAnimeUseCase: GetIt.instance(),
     );
   }
@@ -88,8 +88,8 @@ class _ListAnimePageState extends State<ListAnimePage> {
   }
 
   Widget _buildUncompletedAnimeList() {
-    if(_bloc.isFirstLoadingUncompleted) {
-      _bloc.add(ListAnimeInitEvent(
+    if(_listAnimeBloc.isFirstLoadingUncompleted) {
+      _listAnimeBloc.add(ListAnimeInitEvent(
           tab: _tabIndex
       ));
     }
@@ -97,7 +97,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: BlocConsumer<ListAnimeBloc, ListAnimeState>(
-        bloc: _bloc,
+        bloc: _listAnimeBloc,
         listener: (context, state) {
           if (state is AddAnimeEpisodeLoadingState || state is ReduceAnimeEpisodeLoadingState) {
             _showLoadingForAddReduceProgressEpisode();
@@ -130,7 +130,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                 _buildFailedListAnime(state: state),
                 ElevatedButton(
                   onPressed: () {
-                    _bloc.add(const ListAnimeInitEvent(
+                    _listAnimeBloc.add(const ListAnimeInitEvent(
                       tab: 0,
                     ));
                   },
@@ -151,8 +151,8 @@ class _ListAnimePageState extends State<ListAnimePage> {
   }
 
   Widget _buildCompletedAnimeList() {
-    if(_bloc.isFirstLoadingCompleted) {
-      _bloc.add(ListAnimeInitEvent(
+    if(_listAnimeBloc.isFirstLoadingCompleted) {
+      _listAnimeBloc.add(ListAnimeInitEvent(
           tab: _tabIndex
       ));
     }
@@ -160,7 +160,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: BlocConsumer<ListAnimeBloc, ListAnimeState>(
-        bloc: _bloc,
+        bloc: _listAnimeBloc,
         listener: (context, state) {
           if (state is AddAnimeEpisodeLoadingState || state is ReduceAnimeEpisodeLoadingState || state is UpdateIsCompletedLoadingState) {
             _showLoadingForAddReduceProgressEpisode();
@@ -198,7 +198,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                 _buildFailedListAnime(state: state),
                 ElevatedButton(
                   onPressed: () {
-                    _bloc.add(const ListAnimeInitEvent(
+                    _listAnimeBloc.add(const ListAnimeInitEvent(
                       tab: 0,
                     ));
                   },
@@ -331,13 +331,13 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                     arguments: AnimelistArg(
                                       detailDto: detailDto,
                                       progressEpisode: listAnime[index].progressEpisode,
-                                      score: listAnime[index].score ?? 0,
+                                      userScore: listAnime[index].score ?? 0,
                                     ),
                                   ).then((_) {
-                                    _bloc.isFirstLoadingUncompleted = true;
-                                    _bloc.isFirstLoadingCompleted = true;
+                                    _listAnimeBloc.isFirstLoadingUncompleted = true;
+                                    _listAnimeBloc.isFirstLoadingCompleted = true;
 
-                                    _bloc.add(ListAnimeInitEvent(
+                                    _listAnimeBloc.add(ListAnimeInitEvent(
                                         tab: _tabIndex
                                     ));
                                   });
@@ -386,7 +386,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                 _buildIconButton(
                                     iconData: Icons.remove,
                                     onTap: () {
-                                      _bloc.add(ReduceAnimeEpisodeEvent(
+                                      _listAnimeBloc.add(ReduceAnimeEpisodeEvent(
                                           id: listAnime[index].id ?? 0,
                                           progressEpisode: listAnime[index].progressEpisode
                                       ));
@@ -399,7 +399,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                 _buildIconButton(
                                   iconData: Icons.add,
                                   onTap: () {
-                                    _bloc.add(AddAnimeEpisodeEvent(
+                                    _listAnimeBloc.add(AddAnimeEpisodeEvent(
                                       id: listAnime[index].id ?? 0,
                                       progressEpisode: listAnime[index].progressEpisode,
                                       totalEpisode: listAnime[index].totalEpisode ?? 1,
@@ -412,14 +412,14 @@ class _ListAnimePageState extends State<ListAnimePage> {
                                           btnTextLeft: 'Cancel',
                                           btnTextRight: 'Move',
                                           onRightBtnClick: () {
-                                            _bloc.add(UpdateIsCompletedEvent(
+                                            _listAnimeBloc.add(UpdateIsCompletedEvent(
                                               id: listAnime[index].id ?? 0,
                                               totalEpisode: listAnime[index].totalEpisode ?? 1,
                                             ));
 
-                                            _bloc.isFirstLoadingUncompleted = true;
-                                            _bloc.isFirstLoadingCompleted = true;
-                                            _bloc.add(ListAnimeInitEvent(
+                                            _listAnimeBloc.isFirstLoadingUncompleted = true;
+                                            _listAnimeBloc.isFirstLoadingCompleted = true;
+                                            _listAnimeBloc.add(ListAnimeInitEvent(
                                                 tab: _tabIndex
                                             ));
                                           }

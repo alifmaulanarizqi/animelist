@@ -53,7 +53,7 @@ class _AddAnimePageState extends State<AddAnimePage> {
       _tabBarTitle = 'Edit Anime List';
     }
     _episodePicker = args?.progressEpisode ?? 1;
-    _scorePicker = args?.score ?? 0;
+    _scorePicker = args?.userScore ?? 0;
   }
 
   @override

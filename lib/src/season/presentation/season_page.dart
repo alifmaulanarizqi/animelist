@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fms/src/detail/presentation/arg/detail_arg.dart';
+import 'package:fms/src/search/domain/model/search_dto.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
@@ -8,6 +9,9 @@ import 'package:shimmer/shimmer.dart';
 import '../../../common_ui/utils/colors/common_colors.dart';
 import '../../../common_ui/utils/text_style/common_text_style.dart';
 import '../../../common_ui/widgets/common_state/common_error_state.dart';
+import '../../animelist/presentation/add_anime/add_anime_page.dart';
+import '../../animelist/presentation/add_anime/arg/animelist_arg.dart';
+import '../../detail/domain/model/detail_dto.dart';
 import '../../detail/presentation/detail_page.dart';
 import 'bloc/season_bloc.dart';
 
@@ -23,14 +27,14 @@ class SeasonPage extends StatefulWidget {
 class _SeasonPageState extends State<SeasonPage> {
   late Size _size;
 
-  late SeasonBloc _bloc;
+  late SeasonBloc _seasonBloc;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _bloc = SeasonBloc(seasonUseCase: GetIt.instance())
+    _seasonBloc = SeasonBloc(seasonUseCase: GetIt.instance())
     ..add(const SeasonInitEvent(
         page: 1));
   }
@@ -44,11 +48,11 @@ class _SeasonPageState extends State<SeasonPage> {
   void _onScroll() async {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_bloc.stateData.seasonDto.length <
-          _bloc.stateData.total) {
-        _bloc.isLoadingPagination = true;
-        _bloc.add(SeasonInitEvent(
-            page: _bloc.stateData.currentPage + 1),
+      if (_seasonBloc.stateData.seasonDto.length <
+          _seasonBloc.stateData.total) {
+        _seasonBloc.isLoadingPagination = true;
+        _seasonBloc.add(SeasonInitEvent(
+          page: _seasonBloc.stateData.currentPage + 1),
         );
       }
     }
@@ -63,7 +67,7 @@ class _SeasonPageState extends State<SeasonPage> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: BlocConsumer<SeasonBloc, SeasonState>(
-            bloc: _bloc,
+            bloc: _seasonBloc,
             listener: (context, state) {},
             builder: (context, state) {
               if(state is SeasonFailedState) {
@@ -72,7 +76,7 @@ class _SeasonPageState extends State<SeasonPage> {
                     _buildFailedSeason(state: state),
                     ElevatedButton(
                       onPressed: () {
-                        _bloc.add(const SeasonInitEvent(
+                        _seasonBloc.add(const SeasonInitEvent(
                             page: 1,
                         ));
                       },
@@ -84,9 +88,11 @@ class _SeasonPageState extends State<SeasonPage> {
                 return _buildShimmerLoading();
               } else if (state is SeasonEmptyState) {
                 return _buildEmptySeason(state: state);
+              } else if(state is SeasonSuccessState || state is SeasonPaginationLoadingState || state is GetAnimeLocalSuccessState) {
+                return _buildListSeason(state: state);
               }
 
-              return _buildListSeason(state: state);
+              return const SizedBox.shrink();
             },
           ),
         ),
@@ -109,9 +115,13 @@ class _SeasonPageState extends State<SeasonPage> {
       controller: _scrollController,
       itemCount: state.data.seasonDto.length,
       itemBuilder: (context, index) {
-        bool lastIndex = index == _bloc.stateData.total - 1;
+        bool lastIndex = index == _seasonBloc.stateData.total - 1;
 
-        if(index < _bloc.stateData.seasonDto.length - 1 || lastIndex) {
+        if(index < _seasonBloc.stateData.seasonDto.length - 1 || lastIndex) {
+          _seasonBloc.add(GetAnimeLocalEvent(
+            malId: state.data.seasonDto[index].malId
+          ));
+
           return GestureDetector(
             onTap: () {
               Navigator.pushNamed(
@@ -192,6 +202,56 @@ class _SeasonPageState extends State<SeasonPage> {
                         ),
                       ),
                     ),
+                    BlocBuilder<SeasonBloc, SeasonState>(
+                      bloc: _seasonBloc,
+                      builder: (context, state) {
+                        if(state is GetAnimeLocalSuccessState && state.data.seasonDto[index].isInDB == true) {
+                          return Positioned(
+                            bottom: 15,
+                            right: 0,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              color: CommonColors.blue9F,
+                              padding: const EdgeInsets.all(0),
+                              child: IconButton(
+                                onPressed: () {
+                                  SearchDto searchDto = state.data.seasonDto[index];
+                                  DetailDto detailDto = DetailDto(
+                                    id: searchDto.id ?? 0,
+                                    malId: searchDto.malId,
+                                    title: searchDto.title,
+                                    image: searchDto.image,
+                                    type: searchDto.type,
+                                    season: searchDto.season,
+                                    year: searchDto.year,
+                                    score: searchDto.score.toDouble(),
+                                    episode: searchDto.episode,
+                                  );
+
+                                  Navigator.pushNamed(
+                                    context,
+                                    AddAnimePage.route,
+                                    arguments: AnimelistArg(
+                                      detailDto: detailDto,
+                                      progressEpisode: searchDto.progressEpisode,
+                                      userScore: searchDto.userScore,
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                  color: CommonColors.white,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      }
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -221,7 +281,7 @@ class _SeasonPageState extends State<SeasonPage> {
               ],
             ),
           );
-        } else if(_bloc.stateData.seasonDto.length != _bloc.stateData.total) {
+        } else if(_seasonBloc.stateData.seasonDto.length != _seasonBloc.stateData.total) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
             child: Center(

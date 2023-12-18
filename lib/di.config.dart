@@ -144,8 +144,10 @@ class _$DetailDiModule extends _i28.DetailDiModule {
   final _i1.GetIt _getIt;
 
   @override
-  _i29.DetailRepositoryImpl get searchRepository =>
-      _i29.DetailRepositoryImpl(_getIt<_i16.DetailService>());
+  _i29.DetailRepositoryImpl get searchRepository => _i29.DetailRepositoryImpl(
+        _getIt<_i16.DetailService>(),
+        _getIt<_i7.AnimeDao>(),
+      );
 }
 
 class _$ExampleDiModule extends _i30.ExampleDiModule {
@@ -164,8 +166,10 @@ class _$SearchDiModule extends _i32.SearchDiModule {
   final _i1.GetIt _getIt;
 
   @override
-  _i33.SearchRepositoryImpl get searchRepository =>
-      _i33.SearchRepositoryImpl(_getIt<_i13.SearchService>());
+  _i33.SearchRepositoryImpl get searchRepository => _i33.SearchRepositoryImpl(
+        _getIt<_i13.SearchService>(),
+        _getIt<_i7.AnimeDao>(),
+      );
 }
 
 class _$SeasonDiModule extends _i34.SeasonDiModule {
@@ -174,6 +178,8 @@ class _$SeasonDiModule extends _i34.SeasonDiModule {
   final _i1.GetIt _getIt;
 
   @override
-  _i35.SeasonRepositoryImpl get seasonRepository =>
-      _i35.SeasonRepositoryImpl(_getIt<_i14.SeasonService>());
+  _i35.SeasonRepositoryImpl get seasonRepository => _i35.SeasonRepositoryImpl(
+        _getIt<_i14.SeasonService>(),
+        _getIt<_i7.AnimeDao>(),
+      );
 }

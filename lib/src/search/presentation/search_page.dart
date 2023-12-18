@@ -7,8 +7,12 @@ import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../common_ui/widgets/common_state/common_error_state.dart';
+import '../../animelist/presentation/add_anime/add_anime_page.dart';
+import '../../animelist/presentation/add_anime/arg/animelist_arg.dart';
+import '../../detail/domain/model/detail_dto.dart';
 import '../../detail/presentation/arg/detail_arg.dart';
 import '../../detail/presentation/detail_page.dart';
+import '../domain/model/search_dto.dart';
 
 class SearchPage extends StatefulWidget {
   static const route = '/search';
@@ -20,7 +24,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late SearchBloc _bloc;
+  late SearchBloc _searchBloc;
 
   final TextEditingController _textController = TextEditingController();
   bool _isFocused = false;
@@ -33,7 +37,7 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _bloc = SearchBloc(searchUseCase: GetIt.instance());
+    _searchBloc = SearchBloc(searchUseCase: GetIt.instance());
 
     _focusNode.addListener(() {
       setState(() {
@@ -52,11 +56,11 @@ class _SearchPageState extends State<SearchPage> {
   void _onScroll() async {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_bloc.stateData.searchDto.length <
-          _bloc.stateData.total) {
-        _bloc.isLoadingPagination = true;
-        _bloc.add(SearchInitEvent(
-            page: _bloc.stateData.currentPage + 1),
+      if (_searchBloc.stateData.searchDto.length <
+          _searchBloc.stateData.total) {
+        _searchBloc.isLoadingPagination = true;
+        _searchBloc.add(SearchInitEvent(
+            page: _searchBloc.stateData.currentPage + 1),
         );
       }
     }
@@ -79,7 +83,7 @@ class _SearchPageState extends State<SearchPage> {
                   });
                 },
                 onSubmitted: (text) {
-                  _bloc.add(SearchInitEvent(
+                  _searchBloc.add(SearchInitEvent(
                     page: 1,
                     q: text
                   ));
@@ -104,7 +108,7 @@ class _SearchPageState extends State<SearchPage> {
                 height: 8,
               ),
               BlocConsumer<SearchBloc, SearchState>(
-                  bloc: _bloc,
+                  bloc: _searchBloc,
                   listener: (context, state) {},
                   builder: (context, state) {
                     if (state is SearchFailedState) {
@@ -113,7 +117,7 @@ class _SearchPageState extends State<SearchPage> {
                           _buildFailedSearch(state: state),
                           ElevatedButton(
                             onPressed: () {
-                              _bloc.add(SearchInitEvent(
+                              _searchBloc.add(SearchInitEvent(
                                 page: 1,
                                 q: _textSearch
                               ));
@@ -126,9 +130,11 @@ class _SearchPageState extends State<SearchPage> {
                       return _buildShimmerLoading();
                     } else if (state is SearchEmptyState) {
                       return _buildEmptySearch(state: state);
+                    } else if(state is SearchSuccessState || state is SearchPaginationLoadingState || state is GetAnimeLocalSuccessState) {
+                      return _buildListSearch(state: state);
                     }
 
-                    return _buildListSearch(state: state);
+                    return const SizedBox.shrink();
                   }
               ),
             ],
@@ -152,16 +158,20 @@ class _SearchPageState extends State<SearchPage> {
         controller: _scrollController,
         itemCount: state.data.searchDto.length,
         itemBuilder: (context, index) {
-          bool lastIndex = index == _bloc.stateData.total - 1;
+          bool lastIndex = index == _searchBloc.stateData.total - 1;
 
-          if(index < _bloc.stateData.searchDto.length - 1 || lastIndex) {
+          if(index < _searchBloc.stateData.searchDto.length - 1 || lastIndex) {
+            _searchBloc.add(GetAnimeLocalEvent(
+                malId: state.data.searchDto[index].malId
+            ));
+
             return GestureDetector(
               onTap: () {
                 Navigator.pushNamed(
                   context,
                   DetailPage.route,
                   arguments: DetailArg(
-                      id: state.data.searchDto[index].malId
+                    id: state.data.searchDto[index].malId,
                   ),
                 );
               },
@@ -264,21 +274,72 @@ class _SearchPageState extends State<SearchPage> {
                             height: 8,
                           ),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${state.data.searchDto[index].members}',
-                                style: CommonTypography.caption.copyWith(
-                                    fontSize: 13,
-                                    color: CommonColors.grey75
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${state.data.searchDto[index].members}',
+                                    style: CommonTypography.caption.copyWith(
+                                        fontSize: 13,
+                                        color: CommonColors.grey75
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 6,
+                                  ),
+                                  const Icon(
+                                    Icons.supervisor_account_rounded,
+                                    size: 22,
+                                    color: CommonColors.grey75,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(
-                                width: 6,
-                              ),
-                              const Icon(
-                                Icons.supervisor_account_rounded,
-                                size: 22,
-                                color: CommonColors.grey75,
+                              BlocBuilder<SearchBloc, SearchState>(
+                                bloc: _searchBloc,
+                                builder: (context, state) {
+                                  if(state is GetAnimeLocalSuccessState && state.data.searchDto[index].isInDB == true) {
+                                    return Container(
+                                      width: 40,
+                                      height: 40,
+                                      color: CommonColors.blue9F,
+                                      padding: const EdgeInsets.all(0),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          SearchDto searchDto = state.data.searchDto[index];
+                                          DetailDto detailDto = DetailDto(
+                                            id: searchDto.id ?? 0,
+                                            malId: searchDto.malId,
+                                            title: searchDto.title,
+                                            image: searchDto.image,
+                                            type: searchDto.type,
+                                            season: searchDto.season,
+                                            year: searchDto.year,
+                                            score: searchDto.score.toDouble(),
+                                            episode: searchDto.episode,
+                                          );
+
+                                          Navigator.pushNamed(
+                                            context,
+                                            AddAnimePage.route,
+                                            arguments: AnimelistArg(
+                                              detailDto: detailDto,
+                                              progressEpisode: searchDto.progressEpisode,
+                                              userScore: searchDto.userScore,
+                                            ),
+                                          );
+                                        },
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                          color: CommonColors.white,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  return const SizedBox.shrink();
+                                }
                               ),
                             ],
                           ),
@@ -289,7 +350,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             );
-          } else if(_bloc.stateData.searchDto.length != _bloc.stateData.total) {
+          } else if(_searchBloc.stateData.searchDto.length != _searchBloc.stateData.total) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 20.0),
               child: Center(

@@ -5,6 +5,7 @@ import 'package:fms/common_ui/utils/text_style/common_text_style.dart';
 import 'package:fms/common_ui/widgets/appbar/common_appbar.dart';
 import 'package:fms/src/animelist/presentation/add_anime/add_anime_page.dart';
 import 'package:fms/src/animelist/presentation/add_anime/arg/animelist_arg.dart';
+import 'package:fms/src/detail/domain/model/detail_dto.dart';
 import 'package:fms/src/detail/presentation/arg/detail_arg.dart';
 import 'package:fms/src/detail/presentation/widget/VideoTrailerPlayer.dart';
 import 'package:get_it/get_it.dart';
@@ -28,7 +29,7 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   late DetailBloc _bloc;
 
-  int _animeId = 0;
+  int _malId = 0;
 
   @override
   void initState() {
@@ -45,9 +46,9 @@ class _DetailPageState extends State<DetailPage> {
       ModalRoute.of(context)?.settings.arguments,
     );
     var animeId = args?.id ?? 0;
-    _animeId = animeId;
+    _malId = animeId;
 
-    _bloc.add(DetailInitEvent(id: _animeId));
+    _bloc.add(DetailInitEvent(malId: _malId));
   }
 
   @override
@@ -70,7 +71,7 @@ class _DetailPageState extends State<DetailPage> {
                   ElevatedButton(
                     onPressed: () {
                       _bloc.add(DetailInitEvent(
-                        id: _animeId,
+                        malId: _malId,
                       ));
                     },
                     child: const Text('Refresh'),
@@ -88,14 +89,17 @@ class _DetailPageState extends State<DetailPage> {
       floatingActionButton: BlocBuilder<DetailBloc, DetailState>(
         bloc: _bloc,
         builder: (context, state) {
-          if(state is DetailSuccessState) {
-            return FloatingActionButton(
+          if(state is DetailSuccessState || state is GetAnimeLocalSuccessState) {
+            if(state is DetailSuccessState || state.data.animeEntity?.malId == null) {
+              _bloc.add(GetAnimeLocalEvent(malId: _malId));
+
+              return FloatingActionButton(
                 onPressed: () {
                   Navigator.pushNamed(
                     context,
                     AddAnimePage.route,
                     arguments: AnimelistArg(
-                      detailDto: state.data.detailDto
+                      detailDto: state.data.detailDto,
                     ),
                   );
                 },
@@ -106,7 +110,43 @@ class _DetailPageState extends State<DetailPage> {
                   size: 30,
                   color: CommonColors.white,
                 ),
-            );
+              );
+            }
+
+            if(state is GetAnimeLocalSuccessState && state.data.animeEntity?.malId != null) {
+              return FloatingActionButton(
+                onPressed: () {
+                  DetailDto detailDto = DetailDto(
+                    id: state.data.animeEntity?.id ?? 0,
+                    malId: state.data.animeEntity?.malId ?? 0,
+                    title: state.data.animeEntity?.title ?? '',
+                    image: state.data.animeEntity?.imageUrl ?? '',
+                    type: state.data.animeEntity?.type ?? '',
+                    season: state.data.animeEntity?.season ?? '',
+                    year: state.data.animeEntity?.year ?? 0,
+                    score: state.data.animeEntity?.score?.toDouble() ?? 0,
+                    episode: state.data.animeEntity?.totalEpisode ?? 0,
+                  );
+
+                  Navigator.pushNamed(
+                    context,
+                    AddAnimePage.route,
+                    arguments: AnimelistArg(
+                      detailDto: detailDto,
+                      progressEpisode: state.data.animeEntity?.progressEpisode,
+                      userScore: state.data.animeEntity?.score,
+                    ),
+                  );
+                },
+                backgroundColor: CommonColors.blue9F,
+                shape: const CircleBorder(),
+                child: const Icon(
+                  Icons.edit,
+                  size: 30,
+                  color: CommonColors.white,
+                ),
+              );
+            }
           }
 
           return const SizedBox.shrink();
@@ -130,7 +170,7 @@ class _DetailPageState extends State<DetailPage> {
                 SizedBox(
                   height: 320,
                   child: Image.network(
-                    state.data.detailDto.image,
+                    state.data.detailDto?.image ?? '',
                     fit: BoxFit.cover,
                     loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                       if (loadingProgress == null) {
@@ -165,7 +205,7 @@ class _DetailPageState extends State<DetailPage> {
                           color: CommonColors.black21,
                         ),
                         Text(
-                            '${state.data.detailDto.score}',
+                            '${state.data.detailDto?.score}',
                             style: CommonTypography.heading5.copyWith(
                               color: CommonColors.black21,
                               fontWeight: FontWeight.w500
@@ -178,7 +218,7 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     _buildCommonText(
                       label: 'Rank',
-                      value: '#${state.data.detailDto.rank}',
+                      value: '#${state.data.detailDto?.rank}',
                       valueColor: Colors.blueAccent,
                       crossAxisAlignment: CrossAxisAlignment.end
                     ),
@@ -187,7 +227,7 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     _buildCommonText(
                       label: 'Popularity',
-                      value: '#${state.data.detailDto.popularity}',
+                      value: '#${state.data.detailDto?.popularity}',
                       valueColor: Colors.blueAccent,
                       crossAxisAlignment: CrossAxisAlignment.end
                     ),
@@ -196,7 +236,7 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     _buildCommonText(
                       label: 'Members',
-                      value: NumberFormat("#,###").format(state.data.detailDto.members),
+                      value: NumberFormat("#,###").format(state.data.detailDto?.members),
                       crossAxisAlignment: CrossAxisAlignment.end
                     ),
                     const SizedBox(
@@ -204,7 +244,7 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     _buildCommonText(
                       label: 'Favorites',
-                      value: NumberFormat("#,###").format(state.data.detailDto.favorites),
+                      value: NumberFormat("#,###").format(state.data.detailDto?.favorites),
                       crossAxisAlignment: CrossAxisAlignment.end
                     ),
                   ],
@@ -218,7 +258,7 @@ class _DetailPageState extends State<DetailPage> {
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Text(
-              state.data.detailDto.title,
+              state.data.detailDto?.title ?? '',
               textAlign: TextAlign.center,
               style: CommonTypography.roboto20.copyWith(
                 fontSize: 22,
@@ -231,16 +271,16 @@ class _DetailPageState extends State<DetailPage> {
             height: 12,
           ),
           _buildTypeAiringEpInfo(
-            typeYear: '${state.data.detailDto.type}, ${state.data.detailDto.year}',
-            isAiring: state.data.detailDto.isAiring,
-            epDuration: '${state.data.detailDto.episode}, ${state.data.detailDto.duration}'
+            typeYear: '${state.data.detailDto?.type}, ${state.data.detailDto?.year}',
+            isAiring: state.data.detailDto?.isAiring ?? false,
+            epDuration: '${state.data.detailDto?.episode}, ${state.data.detailDto?.duration}'
           ),
           const SizedBox(
             height: 12,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: _buildGenreAnime(genres: state.data.detailDto.genres)
+            children: _buildGenreAnime(genres: state.data.detailDto?.genres ?? [])
           ),
           const SizedBox(
             height: 12,
@@ -248,7 +288,7 @@ class _DetailPageState extends State<DetailPage> {
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: ExpandableText(
-              state.data.detailDto.synopsis,
+              state.data.detailDto?.synopsis ?? '',
               textAlign: TextAlign.justify,
               style: CommonTypography.roboto16.copyWith(
                 color: CommonColors.black21,
@@ -264,18 +304,18 @@ class _DetailPageState extends State<DetailPage> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
-            child: VideoTrailerPlayer(youtubeId: state.data.detailDto.youtubeId),
+            child: VideoTrailerPlayer(youtubeId: state.data.detailDto?.youtubeId ?? ''),
           ),
           const SizedBox(
             height: 12,
           ),
           _buildSourceSeasonEtc(
-            source: state.data.detailDto.source,
-            seasonYear: '${state.data.detailDto.season} ${state.data.detailDto.year}',
-            studios: state.data.detailDto.studios,
-            aired: '${state.data.detailDto.airedFrom} to ${state.data.detailDto.airedTo}',
-            rating: state.data.detailDto.rating,
-            licensors: state.data.detailDto.licensors
+            source: state.data.detailDto?.source ?? '',
+            seasonYear: '${state.data.detailDto?.season} ${state.data.detailDto?.year}',
+            studios: state.data.detailDto?.studios ?? [],
+            aired: '${state.data.detailDto?.airedFrom} to ${state.data.detailDto?.airedTo}',
+            rating: state.data.detailDto?.rating ?? '',
+            licensors: state.data.detailDto?.licensors ?? [],
           ),
           const SizedBox(
             height: 16,
@@ -283,7 +323,7 @@ class _DetailPageState extends State<DetailPage> {
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Column(
-              children: _buildRelations(relations: state.data.detailDto.relations),
+              children: _buildRelations(relations: state.data.detailDto?.relations ?? []),
             ),
           ),
           const SizedBox(
@@ -292,8 +332,8 @@ class _DetailPageState extends State<DetailPage> {
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: _buildThemes(
-              openings: state.data.detailDto.openings,
-              endings: state.data.detailDto.endings,
+              openings: state.data.detailDto?.openings ?? [],
+              endings: state.data.detailDto?.endings ?? [],
             ),
           ),
           const SizedBox(

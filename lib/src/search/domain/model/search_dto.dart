@@ -9,8 +9,12 @@ class SearchDto {
   final String image;
   final List<String> genres;
   final int malId;
+  bool? isInDB;
+  int? userScore;
+  int? progressEpisode;
+  int? id;
 
-  const SearchDto({
+  SearchDto({
     this.title = '',
     this.type = '',
     this.episode = 0,
@@ -21,6 +25,10 @@ class SearchDto {
     this.image = '',
     this.genres = const [],
     this.malId = 0,
+    this.isInDB = false,
+    this.userScore = 0,
+    this.progressEpisode = 0,
+    this.id = 0,
   });
 
   @override

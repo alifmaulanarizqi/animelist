@@ -11,6 +11,6 @@ abstract class DetailService {
 
   @GET('/anime/{id}/full')
   Future<BaseResponse<DetailResponse>> getAnimeDetail({
-    @Path('id') int? id,
+    @Path('id') int? malId,
   });
 }

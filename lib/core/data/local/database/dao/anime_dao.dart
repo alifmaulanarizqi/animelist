@@ -27,6 +27,9 @@ abstract class AnimeDao {
   @Query("UPDATE Anime SET is_completed = 1 WHERE id = :id")
   Future<void> updateIsCompletedColumn(int id);
 
+  @Query("SELECT * FROM Anime WHERE mal_id = :malId")
+  Future<AnimeEntity?> getAnimeByMalId(int malId);
+
   //
   // @Query('SELECT name FROM Person')
   // Stream<List<String>> findAllPeopleName();

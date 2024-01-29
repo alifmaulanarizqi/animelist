@@ -132,6 +132,17 @@ class _SearchPageState extends State<SearchPage> {
                       return _buildEmptySearch(state: state);
                     } else if(state is SearchSuccessState || state is SearchPaginationLoadingState || state is GetAnimeLocalSuccessState) {
                       return _buildListSearch(state: state);
+                    } else if(_textSearch.isEmpty) {
+                      return Expanded(
+                          child: Center(
+                            child: Text(
+                              'You can search your favorite anime',
+                              style: CommonTypography.heading7.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          )
+                      );
                     }
 
                     return const SizedBox.shrink();

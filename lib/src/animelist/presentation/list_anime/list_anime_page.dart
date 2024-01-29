@@ -89,6 +89,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
 
   Widget _buildUncompletedAnimeList() {
     if(_listAnimeBloc.isFirstLoadingUncompleted) {
+      print('waduh: _buildUncompletedAnimeList');
       _listAnimeBloc.add(ListAnimeInitEvent(
           tab: _tabIndex
       ));
@@ -140,7 +141,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
             );
           } else if (state is ListAnimeLoadingState) {
             return _buildShimmerLoading();
-          } else if (state is ListAnimeEmptyState) {
+          } else if (state is ListAnimeEmptyState || state.data.uncompletedAnime.isEmpty) {
             return _buildEmptyListAnime(state: state);
           }
 
@@ -152,6 +153,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
 
   Widget _buildCompletedAnimeList() {
     if(_listAnimeBloc.isFirstLoadingCompleted) {
+      print('waduh: _buildCompletedAnimeList');
       _listAnimeBloc.add(ListAnimeInitEvent(
           tab: _tabIndex
       ));
@@ -208,7 +210,7 @@ class _ListAnimePageState extends State<ListAnimePage> {
             );
           } else if (state is ListAnimeLoadingState) {
             return _buildShimmerLoading();
-          } else if (state is ListAnimeEmptyState) {
+          } else if (state is ListAnimeEmptyState || state.data.completedAnime.isEmpty) {
             return _buildEmptyListAnime(state: state);
           }
 

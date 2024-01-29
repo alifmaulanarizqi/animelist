@@ -145,10 +145,18 @@ class ListAnimeBloc extends Bloc<ListAnimeEvent, ListAnimeState> {
     if (stateData.error != null) {
       emit(ListAnimeFailedState(stateData));
     } else {
-      if(stateData.uncompletedAnime.isEmpty){
-        emit(ListAnimeEmptyState(stateData));
-      } else{
-        emit(ListAnimeSuccessState(stateData));
+      if(stateData.tab == 0) {
+        if(stateData.uncompletedAnime.isEmpty){
+          emit(ListAnimeEmptyState(stateData));
+        } else {
+          emit(ListAnimeSuccessState(stateData));
+        }
+      } else {
+        if(stateData.completedAnime.isEmpty){
+          emit(ListAnimeEmptyState(stateData));
+        } else {
+          emit(ListAnimeSuccessState(stateData));
+        }
       }
     }
   }
